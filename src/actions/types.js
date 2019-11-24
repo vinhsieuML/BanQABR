@@ -1,0 +1,6 @@
+export const INITCART = 'initcart'
+export const ADDPRODUCTTOCART = 'addproducttocart'
+export const INCRQUANTITY = 'incrquantity'
+export const DECRQUANTITY = 'decrquantity'
+export const REMOVEPRODUCT = 'removeproduct'
+export const SETARRAYPRODUCT ='setarrayproduct'
