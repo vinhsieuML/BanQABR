@@ -1,52 +1,108 @@
 import React, { Component } from 'react';
-import { View, TextInput, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, TextInput, Text, TouchableOpacity, StyleSheet, Keyboard } from 'react-native';
+import { StackActions } from 'react-navigation';
 import signIn from '../../api/signIn';
-import global from '../global';
-
+import global from '../../global';
+import { connect } from 'react-redux'
 import saveToken from '../../api/saveToken';
-
-export default class SignIn extends Component {
+import * as action from '../../actions'
+import { Root, Popup } from 'popup-ui'
+class SignIn extends Component {
     constructor(props) {
         super(props);
         this.state = {
             email: '',
-            password: ''
+            password: '',
         };
     }
 
     onSignIn() {
+        Keyboard.dismiss();
         const { email, password } = this.state;
         signIn(email, password)
             .then(res => {
-                global.onSignIn(res.user);
-                this.props.goBackToMain();
+                this.props.setUser(res.user);
                 saveToken(res.token);
+                this.props.navigation.navigate('Home');
+                // Popup.show({
+                //     type: 'Success',
+                //     title: 'Đăng Nhập Thành Công',
+                //     button: true,
+                //     textBody: 'Đăng Nhập Thành Công Quay Về Trang Chính',
+                //     buttonText: 'OK',
+                //     callback: () => {
+                //         Popup.hide();
+                //         setTimeout(() => {
+
+                //         }, 300)
+
+                //     }
+                // })
+
             })
             .catch(err => console.log(err));
     }
 
+    onSignOut() {
+        this.props.setUser(null);
+        saveToken('');
+    }
+    goBack() {
+        this.props.navigation.navigate('Home');
+    }
+    goSignUp() {
+        this.props.navigation.navigate('SignUp');
+    }
+    showPopUp() {
+        Popup.show({
+            type: 'Warning',
+            title: 'Bạn Đã Đăng Nhập',
+            button: true,
+            autoClose: true,
+            textBody: 'Bạn có muốn đăng xuất ?',
+            buttonText: 'Đăng Xuất',
+            cancelable: true,
+            cancelCallBack: () => {
+                Popup.hide();
+                this.props.navigation.navigate('Home');
+            },
+            callback: () => {
+                this.onSignOut();
+                Popup.hide();
+            }
+        })
+        // this.goBack();
+    }
+    componentDidMount() {
+        this.props.user.user !== null ? this.showPopUp() : null
+    }
     render() {
         const { inputStyle, bigButton, buttonText } = styles;
         const { email, password } = this.state;
         return (
-            <View>
-                <TextInput
-                    style={inputStyle}
-                    placeholder="Enter your email"
-                    value={email}
-                    onChangeText={text => this.setState({ email: text })}
-                />
-                <TextInput
-                    style={inputStyle}
-                    placeholder="Enter your password"
-                    value={password}
-                    onChangeText={text => this.setState({ password: text })}
-                    secureTextEntry
-                />
-                <TouchableOpacity style={bigButton} onPress={this.onSignIn.bind(this)}>
-                    <Text style={buttonText}>SIGN IN NOW</Text>
-                </TouchableOpacity>
-            </View>
+            <Root>
+                <View style={{ flex: 1 }}>
+                    <TextInput
+                        style={inputStyle}
+                        placeholder="Enter your email"
+                        value={email}
+                        onChangeText={text => this.setState({ email: text })}
+                    />
+                    <TextInput
+                        style={inputStyle}
+                        placeholder="Enter your password"
+                        value={password}
+                        onChangeText={text => this.setState({ password: text })}
+                        secureTextEntry
+                    />
+                    <TouchableOpacity style={bigButton} onPress={this.onSignIn.bind(this)}>
+                        <Text style={buttonText}>ĐĂNG NHẬP</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={bigButton} onPress={this.goSignUp.bind(this)}>
+                        <Text style={buttonText}>ĐĂNG KÍ</Text>
+                    </TouchableOpacity>
+                </View>
+            </Root>
         );
     }
 }
@@ -69,7 +125,13 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         fontFamily: 'Avenir',
-        color: '#fff',
+        color: 'red',
         fontWeight: '400'
     }
 });
+const mapStateToProps = state => ({
+    user: state.counter
+});
+
+
+export default connect(mapStateToProps, action)(SignIn);

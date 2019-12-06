@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { View, TextInput, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, TextInput, Text, TouchableOpacity, StyleSheet, Keyboard } from 'react-native';
 import register from '../../api/register';
-
+import { Root, Popup } from 'popup-ui'
 export default class SignUp extends Component {
     constructor(props) {
         super(props);
@@ -14,25 +14,32 @@ export default class SignUp extends Component {
     }
 
     onSuccess() {
-        Alert.alert(
-            'Notice',
-            'Sign up successfully',
-            [
-                { text: 'OK', onPress: this.props.gotoSignIn() }
-            ],
-            { cancelable: false }
-        );
+        console.log("Dang Ki Thanh Cong");
+        Popup.show({
+            type: 'Success',
+            title: 'Đăng Kí Thành Công',
+            button: false,
+            textBody: 'Đăng Kí Thành Công Quay Lại Trang Đăng Nhập',
+            buttontext: 'Đăng Nhập',
+            callback: () => {
+                Popup.hide();
+                this.props.navigation.goBack();
+            }
+        })
     }
 
     onFail() {
-        Alert.alert(
-            'Notice',
-            'Email has been used by other',
-            [
-                { text: 'OK', onPress: () => this.removeEmail.bind(this) }
-            ],
-            { cancelable: false }
-        );
+        console.log("Dang Ki That Bai");
+        Popup.show({
+            type: 'Danger',
+            title: 'Đăng Kí Không Thành Công',
+            button: false,
+            textBody: 'Email đã được sử dụng',
+            buttontext: 'Đăng Nhập',
+            callback: () => {
+                Popup.hide();
+            }
+        })
     }
 
     removeEmail() {
@@ -40,48 +47,51 @@ export default class SignUp extends Component {
     }
 
     registerUser() {
+        Keyboard.dismiss();
         const { name, email, password } = this.state;
         register(email, name, password)
-        .then(res => {
-            if (res === 'THANH_CONG') return this.onSuccess();
-            this.onFail();
-        });
+            .then(res => {
+                if (res === 'THANH CONG') { return this.onSuccess(); }
+                this.onFail();
+            });
     }
 
     render() {
         const { inputStyle, bigButton, buttonText } = styles;
         return (
-            <View>
-                <TextInput 
-                    style={inputStyle} 
-                    placeholder="Enter your name" 
-                    value={this.state.name}
-                    onChangeText={text => this.setState({ name: text })}
-                />
-                <TextInput 
-                    style={inputStyle} 
-                    placeholder="Enter your email" 
-                    value={this.state.email}
-                    onChangeText={text => this.setState({ email: text })}
-                />
-                <TextInput 
-                    style={inputStyle} 
-                    placeholder="Enter your password" 
-                    value={this.state.password}
-                    secureTextEntry
-                    onChangeText={text => this.setState({ password: text })}
-                />
-                <TextInput 
-                    style={inputStyle} 
-                    placeholder="Re-enter your password" 
-                    value={this.state.rePassword}
-                    secureTextEntry
-                    onChangeText={text => this.setState({ rePassword: text })}
-                />
-                <TouchableOpacity style={bigButton} onPress={this.registerUser.bind(this)}>
-                    <Text style={buttonText}>SIGN UP NOW</Text>
-                </TouchableOpacity>
-            </View>
+            <Root>
+                <View>
+                    <TextInput
+                        style={inputStyle}
+                        placeholder="Enter your name"
+                        value={this.state.name}
+                        onChangeText={text => this.setState({ name: text })}
+                    />
+                    <TextInput
+                        style={inputStyle}
+                        placeholder="Enter your email"
+                        value={this.state.email}
+                        onChangeText={text => this.setState({ email: text })}
+                    />
+                    <TextInput
+                        style={inputStyle}
+                        placeholder="Enter your password"
+                        value={this.state.password}
+                        secureTextEntry
+                        onChangeText={text => this.setState({ password: text })}
+                    />
+                    <TextInput
+                        style={inputStyle}
+                        placeholder="Re-enter your password"
+                        value={this.state.rePassword}
+                        secureTextEntry
+                        onChangeText={text => this.setState({ rePassword: text })}
+                    />
+                    <TouchableOpacity style={bigButton} onPress={this.registerUser.bind(this)}>
+                        <Text style={buttonText}>SIGN UP NOW</Text>
+                    </TouchableOpacity>
+                </View>
+            </Root>
         );
     }
 }
@@ -104,7 +114,7 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         fontFamily: 'Avenir',
-        color: '#fff',
+        color: 'red',
         fontWeight: '400'
     }
 });

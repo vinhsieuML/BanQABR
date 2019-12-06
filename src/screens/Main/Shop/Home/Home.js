@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { View, Text,Button, ScrollView } from 'react-native';
+import { View, Text, Button, ScrollView } from 'react-native';
 import { createStackNavigator } from 'react-navigation-stack';
 import Collection from './Collection'
-import {} from 'react-native-elements'
+import { } from 'react-native-elements'
 import HomeView from './HomeView'
 import ListProduct from '../ListProduct/ListProduct'
 import ProductDetail from '../ProductDetail/ProductDetail'
@@ -14,18 +14,34 @@ const Home = createStackNavigator({
     },
     listproduct: {
         screen: ListProduct,
-        path: '/listproduct'
+        path: '/listproduct',
+        // navigationOptions: {
+        //     tabBarVisible: false,
+        // }
     },
-    productdetail:{
+    productdetail: {
         screen: ProductDetail,
-        path: 'ProductDetail'
+        path: 'ProductDetail',
+        // navigationOptions: {
+        //     tabBarVisible: false,
+        // }
     }
 },
-{
-    // initialRouteName = 'HomeView',
-    headerMode:'none'
-}
+    {
+        // initialRouteName = 'HomeView',
+        headerMode: 'none'
+    }
 );
+Home.navigationOptions = ({ navigation }) => {
+    let tabBarVisible = true;
+    if (navigation.state.index > 0) {
+      tabBarVisible = false;
+    }
+  
+    return {
+      tabBarVisible,
+    };
+  };
 
 
 export default Home;

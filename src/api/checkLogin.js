@@ -1,5 +1,6 @@
+import global from '../global'
 const checkLogin = (token) => (
-    fetch('http://10.0.0.13/api/check_login.php',
+    fetch(`${global.baseUrl}/api/checkLogin`,
     {   
         method: 'POST',
         headers: {

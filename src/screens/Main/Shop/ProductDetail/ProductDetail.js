@@ -1,13 +1,15 @@
 import React, { Component } from 'react';
 import {
-    View, Text, StyleSheet, Image, Dimensions, ScrollView, TouchableOpacity
+    View, Text, StyleSheet, Image, Dimensions, ScrollView, TouchableOpacity, Modal,BackHandler 
 } from 'react-native';
 import global from '../../../../global';
-import { Icon } from 'react-native-elements'
+import { Icon, ThemeConsumer } from 'react-native-elements'
 import { connect } from 'react-redux'
 import * as actions from '../../../../actions'
+import ImageViewer from 'react-native-image-zoom-viewer';
 
 class ProductDetail extends Component {
+    state = { isZoom: false };
     goBack() {
         const { navigation } = this.props;
         navigation.goBack();
@@ -15,6 +17,14 @@ class ProductDetail extends Component {
     addThisProductToCart() {
         const product = this.props.navigation.getParam('product');
         this.props.addProductToCart(product);
+    }
+    imagePress() {
+        this.setState({ isZoom: true });
+    };
+    backPress(){
+        console.log(this.backHandler);
+        this.setState({isZoom: false});
+        return true;
     }
     render() {
         const {
@@ -25,7 +35,16 @@ class ProductDetail extends Component {
             descContainer, productImageStyle, descStyle, txtMaterial, txtColor
         } = styles;
         const { name, price, color, material, description, imagesID } = this.props.navigation.getParam('product');
-        return (
+        var images = [];
+        imagesID.split(",").map(e => (
+            images.push({ url: `${global.baseUrl}/api/imageByID/${e}` })
+        ))
+        const imageZoom = (
+            <Modal visible={true} transparent={true}>
+                <ImageViewer imageUrls={images} onDoubleClick={this.backPress.bind(this)} onSwipeDown ={ this.backPress.bind(this) }/>
+            </Modal>
+        );
+        const info = (
             <ScrollView style={wrapper}>
                 <View style={cardStyle}>
                     <View style={header}>
@@ -41,9 +60,12 @@ class ProductDetail extends Component {
                         />
                     </View>
                     <View style={imageContainer}>
+
                         <ScrollView style={{ flexDirection: 'row', padding: 10, height: swiperHeight }} horizontal showsHorizontalScrollIndicator={false}>
                             {imagesID.split(",").map(e => (
-                                <Image source={{ uri: `${global.baseUrl}/api/imageByID/${e}` }} style={productImageStyle} key={e} />
+                                <TouchableOpacity onPress={this.imagePress.bind(this)} key={e}>
+                                    <Image source={{ uri: `${global.baseUrl}/api/imageByID/${e}` }} style={productImageStyle} />
+                                </TouchableOpacity>
                             ))}
                         </ScrollView>
                     </View>
@@ -68,6 +90,12 @@ class ProductDetail extends Component {
                     </View>
                 </View>
             </ScrollView>
+        );
+        const mainJSX = this.state.isZoom ? imageZoom : info;
+        return (
+            <View style={wrapper}>
+                {mainJSX}
+            </View>
         );
     }
 }

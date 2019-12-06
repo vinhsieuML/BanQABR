@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, Image, Dimensions } from 'react-native';
-// import MapView from 'react-native-maps';
+import MapView from 'react-native-maps';
+import {Icon} from 'react-native-elements'
 
-// import phoneIcon from '../../../../media/appIcon/phone.png';
-// import mailIcon from '../../../../media/appIcon/mail.png';
-// import messageIcon from '../../../../media/appIcon/message.png';
-// import locationIcon from '../../../../media/appIcon/location.png';
+import phoneIcon from '../../../../media/appIcon/phone.png';
+import mailIcon from '../../../../media/appIcon/mail.png';
+import messageIcon from '../../../../media/appIcon/message.png';
+import locationIcon from '../../../../media/appIcon/location.png';
 
 class Contact extends Component {
     render() {
@@ -14,50 +15,43 @@ class Contact extends Component {
             rowInfoContainer, imageStyle, infoText
         } = styles;
         return (
-            <View>
-                <Text>
-                    {console.log(this.props.navigation)}
-                    Contact Component
-
-                </Text>
+            <View style={wrapper}>
+                <View style={mapContainer}>
+                    <MapView
+                        style={{ width: width - 20, height: 250 }}
+                        initialRegion={{
+                            latitude: 10.878063,
+                            longitude: 106.807254,
+                            latitudeDelta: 0.0922,
+                            longitudeDelta: 0.0421,
+                        }}
+                    >
+                        <MapView.Marker
+                            coordinate={{ latitude: 10.878063, longitude: 106.807254 }}
+                            title="Cửa Hàng Chính"
+                            description="Địa Chỉ Chính Của Cửa Hàng"
+                        />
+                    </MapView>
+                </View>
+                <View style={infoContainer}>
+                    <View style={rowInfoContainer}>
+                        <Image source={locationIcon} style={imageStyle} />
+                        <Text style={infoText}>Ktx Khu A làng Đại Học Quốc Gia</Text>
+                    </View>
+                    <View style={rowInfoContainer}>
+                        <Image source={phoneIcon} style={imageStyle} />
+                        <Text style={infoText}>(+84) 0906568946</Text>
+                    </View>
+                    <View style={rowInfoContainer}>
+                        <Image source={mailIcon} style={imageStyle} />
+                        <Text style={infoText}>dangvinhsieu.a10@gmail.com</Text>
+                    </View>
+                    <View style={[rowInfoContainer, { borderBottomWidth: 0 }]}>
+                        <Image source={messageIcon} style={imageStyle} />
+                        <Text style={infoText}>(+84) 0906568946</Text>
+                    </View>
+                </View>
             </View>
-            // <View style={wrapper}>
-            //     <View style={mapContainer}>
-            //         <MapView
-            //             style={{ width: width - 20, height: 250 }}
-            //             initialRegion={{
-            //                 latitude: 37.78825,
-            //                 longitude: -122.4324,
-            //                 latitudeDelta: 0.0922,
-            //                 longitudeDelta: 0.0421,
-            //             }}
-            //         >
-            //             <MapView.Marker
-            //                 coordinate={{ latitude: 37.78825, longitude: -122.4324 }}
-            //                 title="Khoa Pham"
-            //                 description="React Native Khoa pham training"
-            //             />
-            //         </MapView>
-            //     </View>
-            //     <View style={infoContainer}>
-            //         <View style={rowInfoContainer}>
-            //             <Image source={locationIcon} style={imageStyle} />
-            //             <Text style={infoText}>90 Le Thi Rieng/ Ben Thanh Dist</Text>
-            //         </View>
-            //         <View style={rowInfoContainer}>
-            //             <Image source={phoneIcon} style={imageStyle} />
-            //             <Text style={infoText}>(+84) 01694472176</Text>
-            //         </View>
-            //         <View style={rowInfoContainer}>
-            //             <Image source={mailIcon} style={imageStyle} />
-            //             <Text style={infoText}>khoaphamtraining@gmail.com</Text>
-            //         </View>
-            //         <View style={[rowInfoContainer, { borderBottomWidth: 0 }]}>
-            //             <Image source={messageIcon} style={imageStyle} />
-            //             <Text style={infoText}>(+84) 09877067707</Text>
-            //         </View>
-            //     </View>
-            // </View>
         );
     }
 }

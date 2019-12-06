@@ -1,12 +1,13 @@
-const signIn = (email, password) => (
-    fetch('http://10.0.0.13/api/login.php',
+import global from '../global'
+const signIn = (email, pass) => (
+    fetch(`${global.baseUrl}/api/login`,
     {   
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             Accept: 'application/json'
         },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, pass })
     })
     .then(res => res.json())
 );

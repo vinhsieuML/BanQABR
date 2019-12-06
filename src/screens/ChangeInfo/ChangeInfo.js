@@ -1,70 +1,112 @@
 import React, { Component } from 'react';
 import {
-    View, TouchableOpacity, Text, Image, StyleSheet, TextInput
+    View, TouchableOpacity, Text, Image, StyleSheet, TextInput, Alert
 } from 'react-native';
 // import backSpecial from '../../media/appIcon/backs.png';
+import { Root, Popup } from 'popup-ui'
+import { connect } from 'react-redux'
 
-export default class ChangeInfo extends Component {
+
+
+
+class ChangeInfo extends Component {
     constructor(props) {
         super(props);
-        const { name, address, phone } = props.user;
-        this.state = { 
-            txtName: name, 
-            txtAddress: address, 
-            txtPhone: phone 
-        };
     }
     goBackToMain() {
         const { navigator } = this.props;
         navigator.pop();
     }
-
+    Alert() {
+        Alert.alert(
+            'Đăng Nhập',
+            'Vui lòng đăng nhập',
+            [
+                { text: 'OK', onPress: this.props.navigation.navigate('Authentication') }
+            ],
+            { cancelable: true }
+        );
+    }
+    showPopUp() {
+        console.log('this');
+        Popup.show({
+            type: 'Warning',
+            title: 'Chuyển Sang Trang Đăng Nhập/ Đăng Kí',
+            button: false,
+            textBody: 'Vui lòng Đăng Nhập hoặc Đăng Kí',
+            buttontext: 'Đăng Nhập / Đăng Kí',
+            callback: () => {
+                Popup.hide();
+                this.props.navigation.navigate('Authentication')
+            }
+        })
+    }
     render() {
         const {
             wrapper, header, headerTitle, backIconStyle, body,
             signInContainer, signInTextStyle, textInput
         } = styles;
-        const { txtName, txtAddress, txtPhone } = this.state;
-        return (
-            <View style={wrapper}>
-                <View style={header}>
-                    <View />
-                    <Text style={headerTitle}>User Infomation</Text>
-                    <TouchableOpacity onPress={this.goBackToMain.bind(this)}>
-                        <Image source={backSpecial} style={backIconStyle} />
-                    </TouchableOpacity>
+        if (this.props.user.user === null) {
+            return (
+               <Root>
+                    <View style={wrapper}>
+                        <Text style={header} style={{ fontSize: 35, alignItems: "center" }}>
+                            Bạn Cần Đăng Nhập Để Thực Hiện Chức Năng Này
+                        </Text>
+                        <Popup />
+                        <TouchableOpacity onPress={this.showPopUp.bind(this)}>
+                            <Text>
+                                Đăng Nhập / Đăng Kí
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                    
+               </Root> 
+            );
+        }
+        else {
+            const { name, address, phone } = this.props.user.user[0];
+            return (
+                <View style={wrapper}>
+                    <View style={header}>
+                        <View />
+                        <Text style={headerTitle}>User Infomation</Text>
+                        <TouchableOpacity onPress={this.goBackToMain.bind(this)}>
+                            {/* <Image source={backSpecial} style={backIconStyle} /> */}
+                        </TouchableOpacity>
+                    </View>
+                    <View style={body}>
+                        <TextInput
+                            style={textInput}
+                            placeholder="Enter your name"
+                            autoCapitalize="none"
+                            value={name}
+                            onChangeText={text => this.setState({ ...this.state, name: text })}
+                            underlineColorAndroid="transparent"
+                        />
+                        <TextInput
+                            style={textInput}
+                            placeholder="Enter your address"
+                            autoCapitalize="none"
+                            value={address}
+                            onChangeText={text => this.setState({ ...this.state, address: text })}
+                            underlineColorAndroid="transparent"
+                        />
+                        <TextInput
+                            style={textInput}
+                            placeholder="Enter your phone number"
+                            autoCapitalize="none"
+                            value={phone}
+                            onChangeText={text => this.setState({ ...this.state, phone: text })}
+                            underlineColorAndroid="transparent"
+                        />
+                        <TouchableOpacity style={signInContainer}>
+                            <Text style={signInTextStyle}>CHANGE YOUR INFOMATION</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
-                <View style={body}>
-                    <TextInput
-                        style={textInput}
-                        placeholder="Enter your name"
-                        autoCapitalize="none"
-                        value={txtName}
-                        onChangeText={text => this.setState({ ...this.state, txtName: text })}
-                        underlineColorAndroid="transparent"
-                    />
-                    <TextInput
-                        style={textInput}
-                        placeholder="Enter your address"
-                        autoCapitalize="none"
-                        value={txtAddress}
-                        onChangeText={text => this.setState({ ...this.state, txtAddress: text })}
-                        underlineColorAndroid="transparent"
-                    />
-                    <TextInput
-                        style={textInput}
-                        placeholder="Enter your phone number"
-                        autoCapitalize="none"
-                        value={txtPhone}
-                        onChangeText={text => this.setState({ ...this.state, txtPhone: text })}
-                        underlineColorAndroid="transparent"
-                    />
-                    <TouchableOpacity style={signInContainer}>
-                        <Text style={signInTextStyle}>CHANGE YOUR INFOMATION</Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
-        );
+            );
+        }
     }
 }
 
@@ -102,3 +144,9 @@ const styles = StyleSheet.create({
         marginTop: 50
     }
 });
+
+const mapStateToProps = state => ({
+    user: state.counter
+});
+
+export default connect(mapStateToProps, null)(ChangeInfo);

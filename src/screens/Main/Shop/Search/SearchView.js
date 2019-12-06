@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import {
     StyleSheet, Text, TouchableOpacity,
-    FlatList, View, Image, Dimensions
+    FlatList, View, Image, Dimensions, RefreshControl
 } from 'react-native';
 // import global from '../../../global';
 import Header from '../../Shop/Header';
-import {connect} from 'react-redux'
+import { connect } from 'react-redux'
 import global from '../../../../global'
 function toTitleCase(str) {
     return str.replace(/\w\S*/g, txt => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
@@ -14,11 +14,9 @@ function toTitleCase(str) {
 class SearchView extends Component {
     constructor(props) {
         super(props);
-        // const ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
-        // this.state = {
-        //     listProduct: ds
-        // };
-        // global.setArraySearch = this.setSearchArray.bind(this);
+        this.state = {
+            refreshing: false
+        }
     }
 
     setSearchArray(arrProduct) {
@@ -27,7 +25,12 @@ class SearchView extends Component {
 
     gotoDetail(product) {
         const { navigate } = this.props.navigation;
-        navigate('ProductDetailForSearch', {product: product});
+        navigate('ProductDetailForSearch', { product: product });
+    }
+    onRefresh() {
+        this.setState({ refreshing: true });
+        this.setState({ refreshing: false })
+
     }
     render() {
         const {
@@ -35,16 +38,22 @@ class SearchView extends Component {
             txtName, txtPrice, productImage,
             txtShowDetail, showDetailContainer, wrapper
         } = styles;
-        
+
         const { arrProduct } = this.props.cart;
         return (
             <View style={wrapper}>
-                <Header navigation={this.props.navigation}/>
+                <Header navigation={this.props.navigation} />
                 <FlatList
                     data={arrProduct}
+                    refreshControl={
+                        <RefreshControl refreshing={this.state.refreshing} onRefresh={this.onRefresh.bind(this)} />
+                    }
                     renderItem={productItem => (
                         <View style={product}>
-                            <Image source={{  uri: `${global.baseUrl}/api/imageByID/${productItem.item.imagesID.split(',')[0]}` }} style={productImage} />
+                            <TouchableOpacity onPress={() => this.gotoDetail(productItem.item)}>
+                                <Image source={{ uri: `${global.baseUrl}/api/imageByID/${productItem.item.imagesID.split(',')[0]}` }} style={productImage} />
+                            </TouchableOpacity>
+
                             <View style={mainRight}>
                                 <Text style={txtName}>{toTitleCase(productItem.item.name)}</Text>
                                 <Text style={txtPrice}>{productItem.item.price}$</Text>
@@ -67,7 +76,7 @@ class SearchView extends Component {
                             </View>
                         </View>
                     )}
-                    extraData ={arrProduct}
+                    extraData={arrProduct}
                 />
             </View>
         );

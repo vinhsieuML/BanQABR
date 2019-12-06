@@ -1,9 +1,12 @@
-import { INITCART, ADDPRODUCTTOCART, INCRQUANTITY, DECRQUANTITY, REMOVEPRODUCT, SETARRAYPRODUCT } from '../actions/types'
+import {
+    INITCART, ADDPRODUCTTOCART, INCRQUANTITY, DECRQUANTITY,
+    REMOVEPRODUCT, SETARRAYPRODUCT, SETUSER, REMOVECART, INITDRAWER
+} from '../actions/types'
 
 import initData from '../api/initData';
 import saveCart from '../api/saveCart';
 import getCart from '../api/getCart';
-let initialState = { Cart: [], arrProduct: [] };
+let initialState = { Cart: [], arrProduct: [], user:null , drawer: null};//arrProduct de tim kiem
 
 
 export default function (state = initialState, action) {
@@ -38,6 +41,22 @@ export default function (state = initialState, action) {
                 ...state,
                 arrProduct: action.payload
             });
+        case SETUSER:
+            return Object.assign({}, state, {
+                ...state,
+                user: action.payload
+            });
+        case REMOVECART:
+            saveCart([]);
+            return Object.assign({}, state, {
+                ...state,
+                Cart: []
+            });
+        case INITDRAWER:
+                return Object.assign({}, state, {
+                    ...state,
+                    drawer: action.payload
+                });
         default:
             return state;
     }

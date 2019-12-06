@@ -1,5 +1,6 @@
+import global from '../global'
 const register = (email, name, password) => (
-    fetch('http://10.0.0.13/api/register.php',
+    fetch(`${global.baseUrl}/api/register`,
     {   
         method: 'POST',
         headers: {
