@@ -1,12 +1,42 @@
 import React, { Component } from 'react';
 import {
-    View, Text, StyleSheet, Image, Dimensions, ScrollView, TouchableOpacity, Modal,BackHandler 
+    View, Text, StyleSheet, Image, Dimensions, ScrollView, TouchableOpacity, Modal
 } from 'react-native';
 import global from '../../../../global';
 import { Icon, ThemeConsumer } from 'react-native-elements'
 import { connect } from 'react-redux'
 import * as actions from '../../../../actions'
 import ImageViewer from 'react-native-image-zoom-viewer';
+import { Root, Toast } from 'popup-ui'
+
+function IconWithBadge({ name, badgeCount, color, size, style }) {
+    return (
+        <View style={{ width: 24, height: 24, margin: 5 }}>
+            <Icon name={name} size={size} color={color} style={style} />
+            {badgeCount > 0 && (
+                <View
+                    style={{
+                        // On React Native < 0.57 overflow outside of parent will not work on Android, see https://git.io/fhLJ8
+                        position: 'absolute',
+                        right: -6,
+                        top: -3,
+                        backgroundColor: 'red',
+                        borderRadius: 7,
+                        width: 14,
+                        height: 14,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}
+                >
+                    <Text style={{ color: 'white', fontSize: 10, fontWeight: 'bold' }}>
+                        {badgeCount}
+                    </Text>
+                </View>
+            )}
+        </View>
+    );
+}
+
 
 class ProductDetail extends Component {
     state = { isZoom: false };
@@ -17,13 +47,19 @@ class ProductDetail extends Component {
     addThisProductToCart() {
         const product = this.props.navigation.getParam('product');
         this.props.addProductToCart(product);
+        Toast.show({
+            title: 'Đã thêm vào giỏ hàng',
+                text: 'Đã Thêm Thành Công Vào Giỏ Hàng',
+                color: '#f39c12',
+                timing: 2000,
+        });
     }
     imagePress() {
         this.setState({ isZoom: true });
     };
-    backPress(){
+    backPress() {
         console.log(this.backHandler);
-        this.setState({isZoom: false});
+        this.setState({ isZoom: false });
         return true;
     }
     render() {
@@ -35,61 +71,73 @@ class ProductDetail extends Component {
             descContainer, productImageStyle, descStyle, txtMaterial, txtColor
         } = styles;
         const { name, price, color, material, description, imagesID } = this.props.navigation.getParam('product');
+
+        //Zoom Image
         var images = [];
         imagesID.split(",").map(e => (
             images.push({ url: `${global.baseUrl}/api/imageByID/${e}` })
         ))
         const imageZoom = (
             <Modal visible={true} transparent={true}>
-                <ImageViewer imageUrls={images} onDoubleClick={this.backPress.bind(this)} onSwipeDown ={ this.backPress.bind(this) }/>
+                <ImageViewer imageUrls={images} onDoubleClick={this.backPress.bind(this)} onSwipeDown={this.backPress.bind(this)} />
             </Modal>
         );
-        const info = (
-            <ScrollView style={wrapper}>
-                <View style={cardStyle}>
-                    <View style={header}>
-                        <Icon
-                            name='arrow-back'
-                            onPress={this.goBack.bind(this)}
-                            style={backStyle}
-                        />
-                        <Icon
-                            name='shopping-cart'
-                            onPress={this.addThisProductToCart.bind(this)}
-                            style={cartStyle}
-                        />
-                    </View>
-                    <View style={imageContainer}>
+        //Cart
+        const badgeValue = this.props.cart.Cart.map(e => e.quantity);
+        const total = badgeValue.length ? badgeValue.reduce((a, b) => a + b) : 0;
 
-                        <ScrollView style={{ flexDirection: 'row', padding: 10, height: swiperHeight }} horizontal showsHorizontalScrollIndicator={false}>
-                            {imagesID.split(",").map(e => (
-                                <TouchableOpacity onPress={this.imagePress.bind(this)} key={e}>
-                                    <Image source={{ uri: `${global.baseUrl}/api/imageByID/${e}` }} style={productImageStyle} />
-                                </TouchableOpacity>
-                            ))}
-                        </ScrollView>
-                    </View>
-                    <View style={footer}>
-                        <View style={titleContainer}>
-                            <Text style={textMain}>
-                                <Text style={textBlack}>{name.toUpperCase()}</Text>
-                                <Text style={textHighlight}> / </Text>
-                                <Text style={textSmoke}>{price}$</Text>
-                            </Text>
+        const info = (
+                <ScrollView style={wrapper}>
+                    <View style={cardStyle}>
+                        <View style={header}>
+                            <Icon
+                                name='arrow-back'
+                                onPress={this.goBack.bind(this)}
+                                style={backStyle}
+                            />
+                            <TouchableOpacity onPress={this.addThisProductToCart.bind(this)}>
+                                <IconWithBadge
+                                    name="shopping-cart"
+                                    size={24}
+                                    type="ionicons"
+                                    color="black"
+                                    style={cartStyle}
+                                    badgeCount={total}
+                                />
+
+                            </TouchableOpacity>
                         </View>
-                        <View style={descContainer}>
-                            <Text style={descStyle}>{description}</Text>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingTop: 15 }}>
-                                <Text style={txtMaterial}>Material {material}</Text>
-                                <View style={{ flexDirection: 'row' }} >
-                                    <Text style={txtColor}>Color {color}</Text>
-                                    <View style={{ height: 15, width: 15, backgroundColor: color.toLowerCase(), borderRadius: 15, marginLeft: 10, borderWidth: 1, borderColor: '#C21C70' }} />
+                        <View style={imageContainer}>
+
+                            <ScrollView style={{ flexDirection: 'row', padding: 10, height: swiperHeight }} horizontal showsHorizontalScrollIndicator={false}>
+                                {imagesID.split(",").map(e => (
+                                    <TouchableOpacity onPress={this.imagePress.bind(this)} key={e}>
+                                        <Image source={{ uri: `${global.baseUrl}/api/imageByID/${e}` }} style={productImageStyle} />
+                                    </TouchableOpacity>
+                                ))}
+                            </ScrollView>
+                        </View>
+                        <View style={footer}>
+                            <View style={titleContainer}>
+                                <Text style={textMain}>
+                                    <Text style={textBlack}>{name.toUpperCase()}</Text>
+                                    <Text style={textHighlight}> / </Text>
+                                    <Text style={textSmoke}>{price}$</Text>
+                                </Text>
+                            </View>
+                            <View style={descContainer}>
+                                <Text style={descStyle}>{description}</Text>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingTop: 15 }}>
+                                    <Text style={txtMaterial}>Material {material}</Text>
+                                    <View style={{ flexDirection: 'row' }} >
+                                        <Text style={txtColor}>Color {color}</Text>
+                                        <View style={{ height: 15, width: 15, backgroundColor: color.toLowerCase(), borderRadius: 15, marginLeft: 10, borderWidth: 1, borderColor: '#C21C70' }} />
+                                    </View>
                                 </View>
                             </View>
                         </View>
                     </View>
-                </View>
-            </ScrollView>
+                </ScrollView>
         );
         const mainJSX = this.state.isZoom ? imageZoom : info;
         return (
@@ -100,7 +148,11 @@ class ProductDetail extends Component {
     }
 }
 
-export default connect(null, actions)(ProductDetail);
+const mapStateToProps = state => ({
+    cart: state.counter
+});
+
+export default connect(mapStateToProps, actions)(ProductDetail);
 const { width } = Dimensions.get('window');
 const swiperWidth = (width / 1.8) - 30;
 const swiperHeight = (swiperWidth * 452) / 361;

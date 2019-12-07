@@ -10,6 +10,7 @@ import { connect } from 'react-redux'
 
 const { height } = Dimensions.get('window');
 
+
 class Header extends Component {
     static headerInstance;
     constructor(props) {
@@ -20,13 +21,13 @@ class Header extends Component {
         };
     }
 
-    static getInstance(){
-        if(this.headerInstance===null){
+    static getInstance() {
+        if (this.headerInstance === null) {
             this.headerInstance = new Header();
             return this.headerInstance;
         }
-        else{
-            return  this.headerInstance;
+        else {
+            return this.headerInstance;
         }
     }
 
@@ -82,7 +83,7 @@ class Header extends Component {
                     value={this.state.txtSearch}
                     onChangeText={text => this.setState({ txtSearch: text })}
                     onFocus={this.gotoSearch.bind(this)}
-                    
+
                     onSubmitEditing={this.onSearch.bind(this)}
                 />
             </View>

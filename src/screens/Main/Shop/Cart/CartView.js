@@ -101,7 +101,7 @@ class CartView extends Component {
                         setTimeout(() => {
                             this.sendOrder(token);
                         }, 1000)
-                        
+
                     }
                 })
             }
@@ -120,54 +120,50 @@ class CartView extends Component {
         const arrTotal = Cart.map(e => e.product.price * e.quantity);
         const total = arrTotal.length ? arrTotal.reduce((a, b) => a + b) : 0;
         return (
-            <Root>
-                <View style={wrapper}>
-                    <FlatList
-                        contentContainerStyle={main}
-                        enableEmptySections
-                        data={Cart}
-                        renderItem={cartItem => (
-                            <View style={productStyle}>
-                                <TouchableOpacity onPress={this.gotoDetail.bind(this, cartItem.item.product)}>
-                                    <Image source={{ uri: `${global.baseUrl}/api/imageByID/${cartItem.item.product.imagesID.split(',')[0]}` }} style={productImage} />
-                                </TouchableOpacity>
-
-
-                                <View style={[mainRight]}>
-                                    <View style={{ justifyContent: 'space-between', flexDirection: 'row' }}>
-                                        <Text style={txtName}>{toTitleCase(cartItem.item.product.name)}</Text>
-                                        <TouchableOpacity onPress={() => this.removeProduct(cartItem.item.product)}>
-                                            <Text style={{ fontFamily: 'Avenir', color: '#969696' }}>X</Text>
+            <View style={wrapper}>
+                <FlatList
+                    contentContainerStyle={main}
+                    enableEmptySections
+                    data={Cart}
+                    renderItem={cartItem => (
+                        <View style={productStyle}>
+                            <TouchableOpacity onPress={this.gotoDetail.bind(this, cartItem.item.product)}>
+                                <Image source={{ uri: `${global.baseUrl}/api/imageByID/${cartItem.item.product.imagesID.split(',')[0]}` }} style={productImage} />
+                            </TouchableOpacity>
+                            <View style={[mainRight]}>
+                                <View style={{ justifyContent: 'space-between', flexDirection: 'row' }}>
+                                    <Text style={txtName}>{toTitleCase(cartItem.item.product.name)}</Text>
+                                    <TouchableOpacity onPress={() => this.removeProduct(cartItem.item.product)}>
+                                        <Text style={{ fontFamily: 'Avenir', color: '#969696' }}>X</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <View>
+                                    <Text style={txtPrice}>{cartItem.item.product.price}$</Text>
+                                </View>
+                                <View style={productController}>
+                                    <View style={numberOfProduct}>
+                                        <TouchableOpacity onPress={() => this.decrQuantity(cartItem.item.product)}>
+                                            <Text style={{ fontSize: 20 }}>-</Text>
+                                        </TouchableOpacity>
+                                        <Text style={{ fontSize: 20 }}>{cartItem.item.quantity}</Text>
+                                        <TouchableOpacity onPress={() => this.incrQuantity(cartItem.item.product)}>
+                                            <Text style={{ fontSize: 20 }}>+</Text>
                                         </TouchableOpacity>
                                     </View>
-                                    <View>
-                                        <Text style={txtPrice}>{cartItem.item.product.price}$</Text>
-                                    </View>
-                                    <View style={productController}>
-                                        <View style={numberOfProduct}>
-                                            <TouchableOpacity onPress={() => this.incrQuantity(cartItem.item.product)}>
-                                                <Text style={{ fontSize: 20 }}>+</Text>
-                                            </TouchableOpacity>
-                                            <Text style={{ fontSize: 20 }}>{cartItem.item.quantity}</Text>
-                                            <TouchableOpacity onPress={() => this.decrQuantity(cartItem.item.product)}>
-                                                <Text style={{ fontSize: 20 }}>-</Text>
-                                            </TouchableOpacity>
-                                        </View>
-                                        <TouchableOpacity style={showDetailContainer} onPress={this.gotoDetail.bind(this, cartItem.item.product)}>
-                                            <Text style={txtShowDetail}>SHOW DETAILS</Text>
-                                        </TouchableOpacity>
-                                    </View>
+                                    <TouchableOpacity style={showDetailContainer} onPress={this.gotoDetail.bind(this, cartItem.item.product)}>
+                                        <Text style={txtShowDetail}>SHOW DETAILS</Text>
+                                    </TouchableOpacity>
                                 </View>
                             </View>
-                        )}
-                        keyExtractor={cartItem => cartItem.product.id}
-                        extraData={this.state}
-                    />
-                    <TouchableOpacity style={checkoutButton} onPress={this.onSendOrder.bind(this)}>
-                        <Text style={checkoutTitle}>TOTAL {total}$ CHECKOUT NOW</Text>
-                    </TouchableOpacity>
-                </View>
-            </Root>
+                        </View>
+                    )}
+                    keyExtractor={cartItem => cartItem.product.id}
+                    extraData={this.state}
+                />
+                <TouchableOpacity style={checkoutButton} onPress={this.onSendOrder.bind(this)}>
+                    <Text style={checkoutTitle}>TOTAL {total}$ CHECKOUT NOW</Text>
+                </TouchableOpacity>
+            </View>
         );
     }
 }

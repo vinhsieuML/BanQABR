@@ -62,7 +62,6 @@ export default function (state = initialState, action) {
     }
 }
 const incrQuantity = (Cart, action) => {
-    console.log(action);
     const productId = action.payload.id;
     const newCart = Cart.map(e => {
         if (e.product.id !== productId) return e;

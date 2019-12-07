@@ -59,7 +59,6 @@ export default class SignUp extends Component {
     render() {
         const { inputStyle, bigButton, buttonText } = styles;
         return (
-            <Root>
                 <View>
                     <TextInput
                         style={inputStyle}
@@ -91,7 +90,6 @@ export default class SignUp extends Component {
                         <Text style={buttonText}>SIGN UP NOW</Text>
                     </TouchableOpacity>
                 </View>
-            </Root>
         );
     }
 }

@@ -31,9 +31,9 @@ function IconWithBadge({ name, badgeCount, color, size }) {
             right: -6,
             top: -3,
             backgroundColor: 'red',
-            borderRadius: 6,
-            width: 12,
-            height: 12,
+            borderRadius: 7,
+            width: 14,
+            height: 14,
             justifyContent: 'center',
             alignItems: 'center',
           }}

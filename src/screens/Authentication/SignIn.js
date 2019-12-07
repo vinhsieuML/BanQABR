@@ -23,21 +23,20 @@ class SignIn extends Component {
             .then(res => {
                 this.props.setUser(res.user);
                 saveToken(res.token);
-                this.props.navigation.navigate('Home');
-                // Popup.show({
-                //     type: 'Success',
-                //     title: 'Đăng Nhập Thành Công',
-                //     button: true,
-                //     textBody: 'Đăng Nhập Thành Công Quay Về Trang Chính',
-                //     buttonText: 'OK',
-                //     callback: () => {
-                //         Popup.hide();
-                //         setTimeout(() => {
+                Popup.show({
+                    type: 'Success',
+                    title: 'Đăng Nhập Thành Công',
+                    button: true,
+                    textBody: 'Đăng Nhập Thành Công Quay Về Trang Chính',
+                    buttonText: 'OK',
+                    callback: () => {
+                        Popup.hide();
+                        setTimeout(() => {
+                            this.props.navigation.navigate('Home');
+                        }, 300)
 
-                //         }, 300)
-
-                //     }
-                // })
+                    }
+                })
 
             })
             .catch(err => console.log(err));
@@ -64,7 +63,9 @@ class SignIn extends Component {
             cancelable: true,
             cancelCallBack: () => {
                 Popup.hide();
-                this.props.navigation.navigate('Home');
+                setTimeout(() => {
+                    this.props.navigation.navigate('Home');
+                }, 300)
             },
             callback: () => {
                 this.onSignOut();
@@ -80,7 +81,6 @@ class SignIn extends Component {
         const { inputStyle, bigButton, buttonText } = styles;
         const { email, password } = this.state;
         return (
-            <Root>
                 <View style={{ flex: 1 }}>
                     <TextInput
                         style={inputStyle}
@@ -102,7 +102,6 @@ class SignIn extends Component {
                         <Text style={buttonText}>ĐĂNG KÍ</Text>
                     </TouchableOpacity>
                 </View>
-            </Root>
         );
     }
 }
