@@ -6,7 +6,7 @@ import global from '../../global';
 import { connect } from 'react-redux'
 import saveToken from '../../api/saveToken';
 import * as action from '../../actions'
-import { Root, Popup } from 'popup-ui'
+import {  Popup } from 'popup-ui'
 class SignIn extends Component {
     constructor(props) {
         super(props);
@@ -21,23 +21,37 @@ class SignIn extends Component {
         const { email, password } = this.state;
         signIn(email, password)
             .then(res => {
-                this.props.setUser(res.user);
-                saveToken(res.token);
-                Popup.show({
-                    type: 'Success',
-                    title: 'Đăng Nhập Thành Công',
-                    button: true,
-                    textBody: 'Đăng Nhập Thành Công Quay Về Trang Chính',
-                    buttonText: 'OK',
-                    callback: () => {
-                        Popup.hide();
-                        setTimeout(() => {
-                            this.props.navigation.navigate('Home');
-                        }, 300)
+                if (!res.message) {
+                    this.props.setUser(res.user);
+                    saveToken(res.token);
+                    console.log('dang nhap thanh cong');
+                    Popup.show({
+                        type: 'Success',
+                        title: 'Đăng Nhập Thành Công',
+                        button: true,
+                        textBody: 'Đăng Nhập Thành Công Quay Về Trang Chính',
+                        buttonText: 'OK',
+                        callback: () => {
+                            Popup.hide();
+                            setTimeout(() => {
+                                this.props.navigation.navigate('Home');
+                            }, 300)
 
-                    }
-                })
-
+                        }
+                    })
+                }
+                else{
+                    Popup.show({
+                        type: 'Danger',
+                        title: 'Đăng Nhập Không Thành Công',
+                        button: true,
+                        textBody: res.message,
+                        buttonText: 'OK',
+                        callback: () => {
+                            Popup.hide();
+                        }
+                    })
+                }
             })
             .catch(err => console.log(err));
     }
@@ -65,7 +79,7 @@ class SignIn extends Component {
                 Popup.hide();
                 setTimeout(() => {
                     this.props.navigation.navigate('Home');
-                }, 300)
+                }, 500)
             },
             callback: () => {
                 this.onSignOut();
@@ -81,27 +95,27 @@ class SignIn extends Component {
         const { inputStyle, bigButton, buttonText } = styles;
         const { email, password } = this.state;
         return (
-                <View style={{ flex: 1 }}>
-                    <TextInput
-                        style={inputStyle}
-                        placeholder="Enter your email"
-                        value={email}
-                        onChangeText={text => this.setState({ email: text })}
-                    />
-                    <TextInput
-                        style={inputStyle}
-                        placeholder="Enter your password"
-                        value={password}
-                        onChangeText={text => this.setState({ password: text })}
-                        secureTextEntry
-                    />
-                    <TouchableOpacity style={bigButton} onPress={this.onSignIn.bind(this)}>
-                        <Text style={buttonText}>ĐĂNG NHẬP</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={bigButton} onPress={this.goSignUp.bind(this)}>
-                        <Text style={buttonText}>ĐĂNG KÍ</Text>
-                    </TouchableOpacity>
-                </View>
+            <View style={{ flex: 1 }}>
+                <TextInput
+                    style={inputStyle}
+                    placeholder="Enter your email"
+                    value={email}
+                    onChangeText={text => this.setState({ email: text })}
+                />
+                <TextInput
+                    style={inputStyle}
+                    placeholder="Enter your password"
+                    value={password}
+                    onChangeText={text => this.setState({ password: text })}
+                    secureTextEntry
+                />
+                <TouchableOpacity style={bigButton} onPress={this.onSignIn.bind(this)}>
+                    <Text style={buttonText}>ĐĂNG NHẬP</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={bigButton} onPress={this.goSignUp.bind(this)}>
+                    <Text style={buttonText}>ĐĂNG KÍ</Text>
+                </TouchableOpacity>
+            </View>
         );
     }
 }

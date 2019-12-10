@@ -5436,6 +5436,11 @@ react-native-screens@^2.0.0-alpha.8:
   dependencies:
     debounce "^1.2.0"
 
+react-native-select-input-ios@^2.0.4:
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/react-native-select-input-ios/-/react-native-select-input-ios-2.0.4.tgz#963245049ea670d850f03e8cd77637714b33239d"
+  integrity sha512-w2rQTeLehbj/KVZMFBSXxdwQDOjOgqKyVJ0nGtPNlnaMDgSpz1aDgSRpoVcvOaqTpkEZSZMkYykGi+JYkcevWA==
+
 react-native-status-bar-height@^2.2.0:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/react-native-status-bar-height/-/react-native-status-bar-height-2.4.0.tgz#de8cee4bb733a196167210d2d0bc1fa10acba3e3"

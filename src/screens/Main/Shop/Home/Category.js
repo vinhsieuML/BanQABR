@@ -17,7 +17,7 @@ export default class Category extends Component {
         return (
             <View style={wrapper}>
                 <View style={{ flex: 1, justifyContent: 'center' }}>
-                    <Text style={textStyle} >LIST OF CARETORY</Text>
+                    <Text style={textStyle} >Danh Mục</Text>
                 </View>
                 <SwiperFlatList
                     // autoplay
@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
     },
     textStyle: {
         fontSize: 20,
-        color: '#AFAEAF'
+        color: 'black'
     },
     imageStyle: {
         height: imageHeight,

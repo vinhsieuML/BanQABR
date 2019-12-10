@@ -20,14 +20,14 @@ export default class TopProduct extends Component {
         return (
             <View style={container}>
                 <View style={titleContainer}>
-                    <Text style={title}>TOP PRODUCT</Text>
+                    <Text style={title}>Sản Phẩm Bán Chạy</Text>
                 </View>
                 <View style={body}>
                     {topProducts.map(e => (
                         <TouchableOpacity style={productContainer} onPress={this.gotoDetail.bind(this,e)} key= {e.id}>
                             <Image source={{ uri: `${url}${e.imagesID.split(',')[0]}` }} style={productImage} />
                             <Text style={produceName}>{e.name}</Text>
-                            <Text style={producePrice}>{e.price }$</Text>
+                            <Text style={producePrice}>{global.MoneyStand(e.price)} VNĐ</Text>
                         </TouchableOpacity>
                     ))}
                     
@@ -35,38 +35,6 @@ export default class TopProduct extends Component {
             </View>
         );
     }
-    // render() {
-    //     const { 
-    //         container, titleContainer, title, 
-    //         body, productContainer, productImage,
-    //         produceName, producePrice 
-    //     } = styles;
-    //     const { topProducts } = this.props;
-    //     return (
-    //         <View style={container}>
-    //             <View style={titleContainer}>
-    //                 <Text style={title}>TOP PRODUCT</Text>
-    //             </View>
-
-    //             <ListView 
-    //                 contentContainerStyle={body}
-    //                 enableEmptySections
-    //                 dataSource={new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 }).cloneWithRows(topProducts)}
-    //                 renderRow={product => (
-    //                     <TouchableOpacity style={productContainer} onPress={() => this.gotoDetail(product)}>
-    //                         <Image source={{ uri: `${url}${product.images[0]}` }} style={productImage} />
-    //                         <Text style={produceName}>{product.name.toUpperCase()}</Text>
-    //                         <Text style={producePrice}>{product.price}$</Text>
-    //                     </TouchableOpacity>
-    //                 )}
-    //                 renderSeparator={(sectionId, rowId) => {
-    //                     if (rowId % 2 === 1) return <View style={{ width, height: 10 }} />;
-    //                     return null;
-    //                 }}
-    //             />
-    //         </View>
-    //     );
-    // }
 }
 
 const { width } = Dimensions.get('window');
@@ -87,7 +55,7 @@ const styles = StyleSheet.create({
         paddingLeft: 10
     },
     title: {
-        color: '#D3D3CF',
+        color: 'black',
         fontSize: 20
     },
     body: {

@@ -1,10 +1,6 @@
 module.exports = {
-    addProductToCart: null,
-    incrQuantity: null,
-    decrQuantity: null,
-    removeProduct: null,
-    onSignIn: false,
-    gotoSearch: null,
-    setArraySearch: null,
+    MoneyStand : (money)=>{
+       return (money).toFixed(1).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+    },
     baseUrl :'http://192.168.0.135:3000'
 };

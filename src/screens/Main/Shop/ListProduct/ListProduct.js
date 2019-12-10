@@ -26,16 +26,24 @@ export default class ListProduct extends Component {
         };
         this.arr = [];
     }
-
-    componentDidMount() {
+    fetchProduct(){
         const { navigation } = this.props;
         var category = navigation.getParam('category');
-        getListProduct(category.id, 1)
+        this.setState({page : this.state.page +1})
+        
+        console.log(this.state.page);
+        getListProduct(category.id, this.state.page)
             .then(arrProduct => {
                 this.arr = arrProduct;
-                this.setState({ listProduct: arrProduct });
+                var result = this.state.listProduct.concat(arrProduct);
+                this.setState({ 
+                    listProduct : result
+                });
             })
             .catch(err => console.log(err));
+    }
+    componentDidMount() {
+        this.fetchProduct();
     }
 
     goBack() {
@@ -67,21 +75,23 @@ export default class ListProduct extends Component {
                     <FlatList
                         showsVerticalScrollIndicator={false}
                         data={this.state.listProduct}
+                        onEndReachedThreshold={0.5}
+                        onEndReached = {this.fetchProduct.bind(this)}
                         renderItem={({ item }) => (
                             <TouchableOpacity onPress={this.gotoDetail.bind(this, item)}>
                                 <View style={productContainer}>
                                     <Image
                                         style={productImage}
-                                        source={{ uri: `${global.baseUrl}/api/imageByID/${item.imagesID.split(",")[0]}`}}
-                                        indicator='bar' 
+                                        source={{ uri: `${global.baseUrl}/api/imageByID/${item.imagesID.split(",")[0]}` }}
+                                        indicator='bar'
                                     />
                                     <View style={productInfo}>
                                         <Text style={txtName}>{toTitleCase(item.name)}</Text>
-                                        <Text style={txtPrice}>{item.price} $</Text>
-                                        <Text style={txtMaterial}>Material {item.material}</Text>
+                                        <Text style={txtPrice}>{item.price} VNĐ</Text>
+                                        {/* <Text style={txtMaterial}>Material {item.material}</Text> */}
                                         <View style={lastRowInfo}>
-                                            <Text style={txtColor} numberOfLines={1}>Color {item.color}</Text>
-                                            <View style={{ backgroundColor: item.color.toLowerCase(), height: 16, width: 16, borderRadius: 8 }} />
+                                            {/* <Text style={txtColor} numberOfLines={1}>Color {item.color}</Text>
+                                            <View style={{ backgroundColor: item.color.toLowerCase(), height: 16, width: 16, borderRadius: 8 }} /> */}
                                             <TouchableOpacity onPress={this.gotoDetail.bind(this, item)}>
                                                 <Text style={txtShowDetail}>SHOW DETAIL</Text>
                                             </TouchableOpacity>
@@ -91,7 +101,7 @@ export default class ListProduct extends Component {
                             </TouchableOpacity>
                         )}
                         keyExtractor={item => item.id}
-                    // extraData ={selected}
+                        extraData={this.state.listProduct}
                     />
                 </View>
             </View>
@@ -153,7 +163,7 @@ const styles = StyleSheet.create({
     },
     txtName: {
         fontFamily: 'Avenir',
-        color: '#BCBCBC',
+        color: 'black',
         fontSize: 20,
         fontWeight: '400'
     },

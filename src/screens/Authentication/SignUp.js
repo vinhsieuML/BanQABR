@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, TextInput, Text, TouchableOpacity, StyleSheet, Keyboard } from 'react-native';
 import register from '../../api/register';
-import { Root, Popup } from 'popup-ui'
+import { Popup } from 'popup-ui'
 export default class SignUp extends Component {
     constructor(props) {
         super(props);
@@ -14,13 +14,12 @@ export default class SignUp extends Component {
     }
 
     onSuccess() {
-        console.log("Dang Ki Thanh Cong");
         Popup.show({
             type: 'Success',
             title: 'Đăng Kí Thành Công',
             button: false,
             textBody: 'Đăng Kí Thành Công Quay Lại Trang Đăng Nhập',
-            buttontext: 'Đăng Nhập',
+            buttonText: 'Đăng Nhập',
             callback: () => {
                 Popup.hide();
                 this.props.navigation.goBack();
@@ -29,13 +28,12 @@ export default class SignUp extends Component {
     }
 
     onFail() {
-        console.log("Dang Ki That Bai");
         Popup.show({
             type: 'Danger',
             title: 'Đăng Kí Không Thành Công',
             button: false,
             textBody: 'Email đã được sử dụng',
-            buttontext: 'Đăng Nhập',
+            buttonText: 'Đăng Nhập',
             callback: () => {
                 Popup.hide();
             }
@@ -48,12 +46,26 @@ export default class SignUp extends Component {
 
     registerUser() {
         Keyboard.dismiss();
-        const { name, email, password } = this.state;
-        register(email, name, password)
+        const { name, email, password, rePassword } = this.state;
+        if(password !== rePassword){
+            Popup.show({
+                type: 'Danger',
+                title: 'Lỗi',
+                button: false,
+                textBody: 'Mật khẩu không trùng nhau',
+                buttonText: 'Nhập Lại',
+                callback: () => {
+                    Popup.hide();
+                }
+            })
+        }
+        else{
+            register(email, name, password)
             .then(res => {
                 if (res === 'THANH CONG') { return this.onSuccess(); }
                 this.onFail();
             });
+        }
     }
 
     render() {
@@ -62,26 +74,26 @@ export default class SignUp extends Component {
                 <View>
                     <TextInput
                         style={inputStyle}
-                        placeholder="Enter your name"
+                        placeholder="Họ và Tên"
                         value={this.state.name}
                         onChangeText={text => this.setState({ name: text })}
                     />
                     <TextInput
                         style={inputStyle}
-                        placeholder="Enter your email"
+                        placeholder="Email"
                         value={this.state.email}
                         onChangeText={text => this.setState({ email: text })}
                     />
                     <TextInput
                         style={inputStyle}
-                        placeholder="Enter your password"
+                        placeholder="Mật Khẩu"
                         value={this.state.password}
                         secureTextEntry
                         onChangeText={text => this.setState({ password: text })}
                     />
                     <TextInput
                         style={inputStyle}
-                        placeholder="Re-enter your password"
+                        placeholder="Nhập lại mật khẩu"
                         value={this.state.rePassword}
                         secureTextEntry
                         onChangeText={text => this.setState({ rePassword: text })}

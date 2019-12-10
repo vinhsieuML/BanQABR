@@ -15,7 +15,7 @@ export default class Collection extends Component {
         return (
             <View style={wrapper}>
                 <View style={{ height: 50, justifyContent: 'center' }}>
-                    <Text style={textStyle} >SPRING COLLECTION</Text>
+                    <Text style={textStyle} >Các Bộ Sưu Tập Mới</Text>
                 </View>
                 <TouchableOpacity style={{ flex: 4, justifyContent: 'flex-end' }} onPress={this.gotoListProduct.bind(this)}>
                     <Image source={bannerImage} style={imageStyle} />
@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
     },
     textStyle: {
         fontSize: 20,
-        color: '#AFAEAF'
+        color: 'black'
     },
     imageStyle: {
         height: imageHeight,

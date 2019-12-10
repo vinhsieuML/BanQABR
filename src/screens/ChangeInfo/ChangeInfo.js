@@ -3,8 +3,10 @@ import {
     View, TouchableOpacity, Text, Image, StyleSheet, TextInput, Alert
 } from 'react-native';
 // import backSpecial from '../../media/appIcon/backs.png';
-import { Root, Popup } from 'popup-ui'
+import { Popup } from 'popup-ui'
 import { connect } from 'react-redux'
+import changeInfo from '../../api/changeInfo'
+import getToken from '../../api/getToken'
 
 
 
@@ -22,8 +24,50 @@ class ChangeInfo extends Component {
         const { navigator } = this.props;
         navigator.pop();
     }
-    changeInfo(){
+    onSuccess() {
+        console.log("A");
+        Popup.show({
+            type: 'Success',
+            title: 'Thay Đổi Thành Công',
+            button: false,
+            textBody: 'Thay Đổi Thành Công',
+            buttonText: 'Ok',
+            callback: () => {
+                Popup.hide();
+            }
+        })
+    }
 
+    onFail() {
+        Popup.show({
+            type: 'Danger',
+            title: 'Thay Đổi Không Thành Công',
+            button: false,
+            textBody: 'Thay Đổi Không Thành Công',
+            buttontext: 'Đăng Nhập',
+            callback: () => {
+                Popup.hide();
+            }
+        })
+    }
+    ChangeInfo(){
+        const { address, phone} = this.state;
+        
+        if(address!=='' && phone!==''){
+            const data = {address, phone}
+            getToken()
+            .then(res => {
+                changeInfo(res, data).then(res2 =>{
+                    console.log(res2);
+                    if(res2.message === "THANH_CONG"){
+                        this.onSuccess();
+                    }
+                    else{
+                        this.onFail();
+                    }
+                })
+            })
+        }
     }
     showPopUp() {
         Popup.show({
@@ -35,6 +79,7 @@ class ChangeInfo extends Component {
             cancelable: true,
             cancelCallBack: () => {
                 Popup.hide();
+                this.props.navigation.navigate('Home');
             },
             callback: () => {
                 Popup.hide();
@@ -91,8 +136,8 @@ class ChangeInfo extends Component {
                         onChangeText={text => this.setState({ ...this.state, phone: text })}
                         underlineColorAndroid="transparent"
                     />
-                    <TouchableOpacity style={signInContainer} onPress= {this.changeInfo.bind(this)}>
-                        <Text style={signInTextStyle}>CHANGE YOUR INFOMATION</Text>
+                    <TouchableOpacity style={signInContainer} onPress= {this.ChangeInfo.bind(this)}>
+                        <Text style={signInTextStyle}>THAY ĐỔI THÔNG TIN</Text>
                     </TouchableOpacity>
                 </View>
             </View>

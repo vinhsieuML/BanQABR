@@ -1,13 +1,15 @@
 import React, { Component } from 'react';
 import {
-    View, Text, StyleSheet, Image, Dimensions, ScrollView, TouchableOpacity, Modal
+    View, Text, StyleSheet, Image, Dimensions, ScrollView, TouchableOpacity, Modal, Button,
 } from 'react-native';
 import global from '../../../../global';
-import { Icon, ThemeConsumer } from 'react-native-elements'
+import { Icon } from 'react-native-elements'
+import getSize from '../../../../api/getSize'
 import { connect } from 'react-redux'
 import * as actions from '../../../../actions'
 import ImageViewer from 'react-native-image-zoom-viewer';
-import { Root, Toast } from 'popup-ui'
+import SelectInput from 'react-native-select-input-ios'
+import { Toast } from 'popup-ui'
 
 function IconWithBadge({ name, badgeCount, color, size, style }) {
     return (
@@ -16,7 +18,6 @@ function IconWithBadge({ name, badgeCount, color, size, style }) {
             {badgeCount > 0 && (
                 <View
                     style={{
-                        // On React Native < 0.57 overflow outside of parent will not work on Android, see https://git.io/fhLJ8
                         position: 'absolute',
                         right: -6,
                         top: -3,
@@ -39,7 +40,11 @@ function IconWithBadge({ name, badgeCount, color, size, style }) {
 
 
 class ProductDetail extends Component {
-    state = { isZoom: false };
+    constructor() {
+        super();
+
+    }
+    state = { isZoom: false, listSize: null };
     goBack() {
         const { navigation } = this.props;
         navigation.goBack();
@@ -48,10 +53,11 @@ class ProductDetail extends Component {
         const product = this.props.navigation.getParam('product');
         this.props.addProductToCart(product);
         Toast.show({
-            title: 'Đã thêm vào giỏ hàng',
-                text: 'Đã Thêm Thành Công Vào Giỏ Hàng',
-                color: '#f39c12',
-                timing: 2000,
+            listSize: this.state.listSize,
+            title: 'Thêm vào giỏ hàng',
+            text: 'Đã Thêm Thành Công Vào Giỏ Hàng',
+            color: '#f39c12',
+            timing: 2000,
         });
     }
     imagePress() {
@@ -62,15 +68,22 @@ class ProductDetail extends Component {
         this.setState({ isZoom: false });
         return true;
     }
+    componentDidMount() {
+        getSize(this.props.navigation.getParam('product').id)
+            .then(res => {
+                this.setState({ listSize: res })
+            })
+    }
     render() {
         const {
             wrapper, cardStyle, header,
             footer, backStyle,
             imageContainer, cartStyle, textBlack,
             textSmoke, textHighlight, textMain, titleContainer,
-            descContainer, productImageStyle, descStyle, txtMaterial, txtColor
+            descContainer, productImageStyle, descStyle,
         } = styles;
-        const { name, price, color, material, description, imagesID } = this.props.navigation.getParam('product');
+        const { name, price, description, imagesID } = this.props.navigation.getParam('product');
+
 
         //Zoom Image
         var images = [];
@@ -85,61 +98,69 @@ class ProductDetail extends Component {
         //Cart
         const badgeValue = this.props.cart.Cart.map(e => e.quantity);
         const total = badgeValue.length ? badgeValue.reduce((a, b) => a + b) : 0;
-
         const info = (
-                <ScrollView style={wrapper}>
-                    <View style={cardStyle}>
-                        <View style={header}>
-                            <Icon
-                                name='arrow-back'
-                                onPress={this.goBack.bind(this)}
-                                style={backStyle}
+            <ScrollView style={wrapper}>
+                <Toast
+                    ref={c => {
+                        if (c) Toast.toastInstance = c
+                    }}
+                />
+                <View style={cardStyle}>
+                    <View style={header}>
+                        <Icon
+                            name='arrow-back'
+                            onPress={this.goBack.bind(this)}
+                            style={backStyle}
+                        />
+                        <TouchableOpacity onPress={this.addThisProductToCart.bind(this)}>
+                            <IconWithBadge
+                                name="shopping-cart"
+                                size={24}
+                                type="ionicons"
+                                color="black"
+                                style={cartStyle}
+                                badgeCount={total}
                             />
-                            <TouchableOpacity onPress={this.addThisProductToCart.bind(this)}>
-                                <IconWithBadge
-                                    name="shopping-cart"
-                                    size={24}
-                                    type="ionicons"
-                                    color="black"
-                                    style={cartStyle}
-                                    badgeCount={total}
-                                />
 
-                            </TouchableOpacity>
-                        </View>
-                        <View style={imageContainer}>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={imageContainer}>
 
-                            <ScrollView style={{ flexDirection: 'row', padding: 10, height: swiperHeight }} horizontal showsHorizontalScrollIndicator={false}>
-                                {imagesID.split(",").map(e => (
-                                    <TouchableOpacity onPress={this.imagePress.bind(this)} key={e}>
-                                        <Image source={{ uri: `${global.baseUrl}/api/imageByID/${e}` }} style={productImageStyle} />
-                                    </TouchableOpacity>
-                                ))}
-                            </ScrollView>
+                        <ScrollView style={{ flexDirection: 'row', padding: 10, height: swiperHeight }} horizontal showsHorizontalScrollIndicator={false}>
+                            {imagesID.split(",").map(e => (
+                                <TouchableOpacity onPress={this.imagePress.bind(this)} key={e}>
+                                    <Image source={{ uri: `${global.baseUrl}/api/imageByID/${e}` }} style={productImageStyle} />
+                                </TouchableOpacity>
+                            ))}
+                        </ScrollView>
+                    </View>
+                    <Text>Vui lòng chọn size</Text>
+                    {this.state.listSize!==null ? <SelectInput value={0} options={this.state.listSize} />: null}
+ 
+                    <View style={footer}>
+                        <View style={titleContainer}>
+                            <Text style={textMain}>
+                                <Text style={textBlack}>{name.toUpperCase()}</Text>
+                                <Text style={textHighlight}> {"\n"}</Text>
+                                <Text style={textSmoke}>{price}VNĐ</Text>
+                            </Text>
                         </View>
-                        <View style={footer}>
-                            <View style={titleContainer}>
-                                <Text style={textMain}>
-                                    <Text style={textBlack}>{name.toUpperCase()}</Text>
-                                    <Text style={textHighlight}> / </Text>
-                                    <Text style={textSmoke}>{price}$</Text>
-                                </Text>
-                            </View>
-                            <View style={descContainer}>
-                                <Text style={descStyle}>{description}</Text>
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingTop: 15 }}>
-                                    <Text style={txtMaterial}>Material {material}</Text>
-                                    <View style={{ flexDirection: 'row' }} >
-                                        <Text style={txtColor}>Color {color}</Text>
-                                        <View style={{ height: 15, width: 15, backgroundColor: color.toLowerCase(), borderRadius: 15, marginLeft: 10, borderWidth: 1, borderColor: '#C21C70' }} />
-                                    </View>
+                        <View style={descContainer}>
+                            <Text style={descStyle}>{description}</Text>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingTop: 15 }}>
+                                {/* <Text style={txtMaterial}>Material {material}</Text> */}
+                                <View style={{ flexDirection: 'row' }} >
+                                    {/* <Text style={txtColor}>Color {color}</Text>
+                                        <View style={{ height: 15, width: 15, backgroundColor: color.toLowerCase(), borderRadius: 15, marginLeft: 10, borderWidth: 1, borderColor: '#C21C70' }} /> */}
                                 </View>
                             </View>
                         </View>
                     </View>
-                </ScrollView>
+                </View>
+            </ScrollView>
         );
         const mainJSX = this.state.isZoom ? imageZoom : info;
+        
         return (
             <View style={wrapper}>
                 {mainJSX}
@@ -160,7 +181,8 @@ const swiperHeight = (swiperWidth * 452) / 361;
 const styles = StyleSheet.create({
     wrapper: {
         flex: 1,
-        backgroundColor: '#D6D6D6',
+        // backgroundColor: '#D6D6D6',
+        backgroundColor: 'black',
     },
     cardStyle: {
         flex: 1,
@@ -210,7 +232,8 @@ const styles = StyleSheet.create({
     textSmoke: {
         fontFamily: 'Avenir',
         fontSize: 20,
-        color: '#9A9A9A'
+        // color: '#9A9A9A'
+        color: "red"
     },
     textHighlight: {
         fontFamily: 'Avenir',

@@ -3,7 +3,7 @@ import {
     View, Text, TouchableOpacity, ListView,
     Dimensions, StyleSheet, Image, Button, FlatList
 } from 'react-native';
-import { Root, Popup } from 'popup-ui'
+import {  Popup } from 'popup-ui'
 import { connect } from 'react-redux'
 import * as actions from '../../../../actions';
 import sendOrder from '../../../../api/sendOrder';
@@ -78,32 +78,50 @@ class CartView extends Component {
                     title: 'Bạn chưa Đăng Nhập',
                     button: false,
                     textBody: 'Vui lòng Đăng Nhập hoặc Đăng Kí',
-                    buttonText: 'Đăng Nhập / Đăng Kí',
+                    buttonText: 'Đăng Nhập/Đăng Kí',
                     callback: () => {
                         Popup.hide();
                         this.props.navigation.navigate('Authentication')
+                    },
+                    cancelable: true,
+                    cancelCallBack: () =>{
+                        Popup.hide();
                     }
                 })
             }
             else {
-                Popup.show({
-                    type: 'Warning',
-                    title: 'Xác nhận địa chỉ giao hàng',
-                    button: true,
-                    textBody: 'Địa Chỉ: ' + this.props.cart.user[0].address,
-                    buttonText: 'Xác Nhận',
-                    cancelable: true,
-                    cancelCallBack: () => {
-                        Popup.hide();
-                    },
-                    callback: () => {
-                        Popup.hide();
-                        setTimeout(() => {
-                            this.sendOrder(token);
-                        }, 1000)
-
-                    }
-                })
+                if(this.props.cart.user[0].address===null||this.props.cart.user[0].phone===null){
+                    Popup.show({
+                        type: 'Warning',
+                        title: 'Chưa có thông tin',
+                        button: true,
+                        textBody: 'Chưa có thông tin giao hàng vui lòng thay đổi trong Thay Đổi Thông Tin',
+                        buttonText: 'Xác Nhận',
+                        callback: () => {
+                            Popup.hide();
+                        }
+                    })
+                }
+                else{
+                    Popup.show({
+                        type: 'Warning',
+                        title: 'Xác nhận địa chỉ giao hàng',
+                        button: true,
+                        textBody: 'Địa Chỉ: ' + this.props.cart.user[0].address,
+                        buttonText: 'Xác Nhận',
+                        cancelable: true,
+                        cancelCallBack: () => {
+                            Popup.hide();
+                        },
+                        callback: () => {
+                            Popup.hide();
+                            setTimeout(() => {
+                                this.sendOrder(token);
+                            }, 1000)
+    
+                        }
+                    })
+                }
             }
 
         } catch (e) {
@@ -138,7 +156,7 @@ class CartView extends Component {
                                     </TouchableOpacity>
                                 </View>
                                 <View>
-                                    <Text style={txtPrice}>{cartItem.item.product.price}$</Text>
+                                    <Text style={txtPrice}>{global.MoneyStand(cartItem.item.product.price)} VNĐ</Text>
                                 </View>
                                 <View style={productController}>
                                     <View style={numberOfProduct}>
@@ -161,7 +179,7 @@ class CartView extends Component {
                     extraData={this.state}
                 />
                 <TouchableOpacity style={checkoutButton} onPress={this.onSendOrder.bind(this)}>
-                    <Text style={checkoutTitle}>TOTAL {total}$ CHECKOUT NOW</Text>
+                    <Text style={checkoutTitle}>TỔNG CỘNG {global.MoneyStand(total)} VNĐ</Text>
                 </TouchableOpacity>
             </View>
         );
