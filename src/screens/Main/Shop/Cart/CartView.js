@@ -153,7 +153,7 @@ class CartView extends Component {
                                     <Text style={txtName}>{toTitleCase(cartItem.item.product.name)}</Text>
                                     <TouchableOpacity onPress={() => this.removeProduct(cartItem.item.product)}>
                                         <Text style={{ fontFamily: 'Avenir', color: '#969696' }}>X</Text>
-                                    </TouchableOpacity>
+                                      </TouchableOpacity>
                                 </View>
                                 <View>
                                     <Text style={txtPrice}>{global.MoneyStand(cartItem.item.product.price)} VNĐ</Text>
@@ -168,9 +168,9 @@ class CartView extends Component {
                                             <Text style={{ fontSize: 20 }}>+</Text>
                                         </TouchableOpacity>
                                     </View>
-                                    <TouchableOpacity style={showDetailContainer} onPress={this.gotoDetail.bind(this, cartItem.item.product)}>
+                                    {/* <TouchableOpacity style={showDetailContainer} onPress={this.gotoDetail.bind(this, cartItem.item.product)}>
                                         <Text style={txtShowDetail}>SHOW DETAILS</Text>
-                                    </TouchableOpacity>
+                                    </TouchableOpacity> */}
                                 </View>
                             </View>
                         </View>

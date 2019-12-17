@@ -56,10 +56,10 @@ class SearchView extends Component {
 
                             <View style={mainRight}>
                                 <Text style={txtName}>{toTitleCase(productItem.item.name)}</Text>
-                                <Text style={txtPrice}>{productItem.item.price}$</Text>
-                                <Text style={txtMaterial}>Material {productItem.item.material}</Text>
+                                <Text style={txtPrice}>{global.MoneyStand(productItem.item.price)} VNĐ</Text>
+                                {/* <Text style={txtMaterial}>Material {productItem.item.material}</Text> */}
                                 <View style={{ flexDirection: 'row' }} >
-                                    <Text style={txtColor}>Color {productItem.item.color}</Text>
+                                    {/* <Text style={txtColor}>Color {productItem.item.color}</Text> */}
                                     <View
                                         style={{
                                             height: 15,

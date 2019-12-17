@@ -92,9 +92,9 @@ export default class ListProduct extends Component {
                                         <View style={lastRowInfo}>
                                             {/* <Text style={txtColor} numberOfLines={1}>Color {item.color}</Text>
                                             <View style={{ backgroundColor: item.color.toLowerCase(), height: 16, width: 16, borderRadius: 8 }} /> */}
-                                            <TouchableOpacity onPress={this.gotoDetail.bind(this, item)}>
+                                            {/* <TouchableOpacity onPress={this.gotoDetail.bind(this, item)}>
                                                 <Text style={txtShowDetail}>SHOW DETAIL</Text>
-                                            </TouchableOpacity>
+                                            </TouchableOpacity> */}
                                         </View>
                                     </View>
                                 </View>

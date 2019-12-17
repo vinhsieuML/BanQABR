@@ -62,11 +62,17 @@ export default function (state = initialState, action) {
     }
 }
 const incrQuantity = (Cart, action) => {
-    const productId = action.payload.id;
+    
+    const productId = action.payload.product.id;
+    const size = action.payload.size;
     const newCart = Cart.map(e => {
         if (e.product.id !== productId) return e;
+        else {
+            // if(e.size !== action.payloa)
+        }
         return { product: e.product, quantity: e.quantity + 1 };
     });
+    console.log(newCart);
     saveCart(newCart);
     return newCart;
 }

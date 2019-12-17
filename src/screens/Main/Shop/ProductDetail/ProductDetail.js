@@ -44,21 +44,24 @@ class ProductDetail extends Component {
         super();
 
     }
-    state = { isZoom: false, listSize: null };
+    state = { isZoom: false, listSize: null , selectedSize: null};
     goBack() {
         const { navigation } = this.props;
         navigation.goBack();
     }
     addThisProductToCart() {
         const product = this.props.navigation.getParam('product');
-        this.props.addProductToCart(product);
-        Toast.show({
-            listSize: this.state.listSize,
-            title: 'Thêm vào giỏ hàng',
-            text: 'Đã Thêm Thành Công Vào Giỏ Hàng',
-            color: '#f39c12',
-            timing: 2000,
-        });
+        const size = this.state.selectedSize;
+        const data ={product, size};
+        console.log(data, size);
+        // this.props.addProductToCart(data);
+        // Toast.show({
+        //     listSize: this.state.listSize,
+        //     title: 'Thêm vào giỏ hàng',
+        //     text: 'Đã Thêm Thành Công Vào Giỏ Hàng',
+        //     color: '#f39c12',
+        //     timing: 2000,
+        // });
     }
     imagePress() {
         this.setState({ isZoom: true });
@@ -74,6 +77,11 @@ class ProductDetail extends Component {
                 this.setState({ listSize: res })
             })
     }
+    onSubmitEditingSize(value) {
+        this.setState({
+          selectedSize: value,
+        });
+      }
     render() {
         const {
             wrapper, cardStyle, header,
@@ -135,14 +143,15 @@ class ProductDetail extends Component {
                         </ScrollView>
                     </View>
                     <Text>Vui lòng chọn size</Text>
-                    {this.state.listSize!==null ? <SelectInput value={0} options={this.state.listSize} />: null}
+                    {this.state.listSize!==null ? 
+                    <SelectInput value={0}  options={this.state.listSize} onSubmitEditing={this.onSubmitEditingSize.bind(this)} />: null}
  
                     <View style={footer}>
                         <View style={titleContainer}>
                             <Text style={textMain}>
                                 <Text style={textBlack}>{name.toUpperCase()}</Text>
                                 <Text style={textHighlight}> {"\n"}</Text>
-                                <Text style={textSmoke}>{price}VNĐ</Text>
+                                <Text style={textSmoke}>{global.MoneyStand(price)} VNĐ</Text>
                             </Text>
                         </View>
                         <View style={descContainer}>
