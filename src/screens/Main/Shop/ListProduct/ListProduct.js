@@ -87,7 +87,7 @@ export default class ListProduct extends Component {
                                     />
                                     <View style={productInfo}>
                                         <Text style={txtName}>{toTitleCase(item.name)}</Text>
-                                        <Text style={txtPrice}>{item.price} VNĐ</Text>
+                                        <Text style={txtPrice}>{global.MoneyStand(item.price)} VNĐ</Text>
                                         {/* <Text style={txtMaterial}>Material {item.material}</Text> */}
                                         <View style={lastRowInfo}>
                                             {/* <Text style={txtColor} numberOfLines={1}>Color {item.color}</Text>

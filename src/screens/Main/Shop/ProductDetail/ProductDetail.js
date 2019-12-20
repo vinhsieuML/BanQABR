@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import {
-    View, Text, StyleSheet, Image, Dimensions, ScrollView, TouchableOpacity, Modal, Button,
+    View, Text, StyleSheet, Image, Dimensions, ScrollView, TouchableOpacity, Modal, Button
 } from 'react-native';
+import { WebView } from 'react-native-webview'
 import global from '../../../../global';
 import { Icon } from 'react-native-elements'
 import getSize from '../../../../api/getSize'
@@ -44,7 +45,7 @@ class ProductDetail extends Component {
         super();
 
     }
-    state = { isZoom: false, listSize: null , selectedSize: null};
+    state = { isZoom: false, listSize: null, selectedSize: null };
     goBack() {
         const { navigation } = this.props;
         navigation.goBack();
@@ -52,16 +53,26 @@ class ProductDetail extends Component {
     addThisProductToCart() {
         const product = this.props.navigation.getParam('product');
         const size = this.state.selectedSize;
-        const data ={product, size};
-        console.log(data, size);
-        // this.props.addProductToCart(data);
-        // Toast.show({
-        //     listSize: this.state.listSize,
-        //     title: 'Thêm vào giỏ hàng',
-        //     text: 'Đã Thêm Thành Công Vào Giỏ Hàng',
-        //     color: '#f39c12',
-        //     timing: 2000,
-        // });
+        if (size !== null) {
+            const sizename = this.state.listSize.find(e => e.id_size_detail === size).name;
+            const data = { product, size , sizename};
+            this.props.addProductToCart(data);
+            Toast.show({
+                title: 'Thêm vào giỏ hàng',
+                text: 'Đã Thêm Thành Công Vào Giỏ Hàng',
+                color: '#f39c12',
+                timing: 2000,
+            });
+        }
+        else {
+            Toast.show({
+                title: 'Vui lòng chọn size',
+                text: 'Bạn chưa chọn size vui lòng chọn size',
+                color: 'red',
+                timing: 2000,
+            });
+        }
+
     }
     imagePress() {
         this.setState({ isZoom: true });
@@ -79,9 +90,9 @@ class ProductDetail extends Component {
     }
     onSubmitEditingSize(value) {
         this.setState({
-          selectedSize: value,
+            selectedSize: value,
         });
-      }
+    }
     render() {
         const {
             wrapper, cardStyle, header,
@@ -143,9 +154,9 @@ class ProductDetail extends Component {
                         </ScrollView>
                     </View>
                     <Text>Vui lòng chọn size</Text>
-                    {this.state.listSize!==null ? 
-                    <SelectInput value={0}  options={this.state.listSize} onSubmitEditing={this.onSubmitEditingSize.bind(this)} />: null}
- 
+                    {this.state.listSize !== null ?
+                        <SelectInput value={0} options={this.state.listSize} onSubmitEditing={this.onSubmitEditingSize.bind(this)} /> : null}
+
                     <View style={footer}>
                         <View style={titleContainer}>
                             <Text style={textMain}>
@@ -155,22 +166,19 @@ class ProductDetail extends Component {
                             </Text>
                         </View>
                         <View style={descContainer}>
-                            <Text style={descStyle}>{description}</Text>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingTop: 15 }}>
-                                {/* <Text style={txtMaterial}>Material {material}</Text> */}
-                                <View style={{ flexDirection: 'row' }} >
-                                    {/* <Text style={txtColor}>Color {color}</Text>
-                                        <View style={{ height: 15, width: 15, backgroundColor: color.toLowerCase(), borderRadius: 15, marginLeft: 10, borderWidth: 1, borderColor: '#C21C70' }} /> */}
-                                </View>
-                            </View>
+                            <Text>
+                                aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                            </Text>
+                            {/* <WebView source={{ uri: 'https://facebook.github.io/react-native/' }} /> */}
                         </View>
                     </View>
                 </View>
             </ScrollView>
         );
         const mainJSX = this.state.isZoom ? imageZoom : info;
-        
+
         return (
+
             <View style={wrapper}>
                 {mainJSX}
             </View>
@@ -183,7 +191,7 @@ const mapStateToProps = state => ({
 });
 
 export default connect(mapStateToProps, actions)(ProductDetail);
-const { width } = Dimensions.get('window');
+const { width,height } = Dimensions.get('window');
 const swiperWidth = (width / 1.8) - 30;
 const swiperHeight = (swiperWidth * 452) / 361;
 

@@ -3,7 +3,7 @@ import {
     View, Text, TouchableOpacity, ListView,
     Dimensions, StyleSheet, Image, Button, FlatList
 } from 'react-native';
-import {  Popup } from 'popup-ui'
+import { Popup } from 'popup-ui'
 import { connect } from 'react-redux'
 import * as actions from '../../../../actions';
 import sendOrder from '../../../../api/sendOrder';
@@ -84,13 +84,13 @@ class CartView extends Component {
                         this.props.navigation.navigate('Authentication')
                     },
                     cancelable: true,
-                    cancelCallBack: () =>{
+                    cancelCallBack: () => {
                         Popup.hide();
                     }
                 })
             }
             else {
-                if(this.props.cart.user[0].address===null||this.props.cart.user[0].phone===null){
+                if (this.props.cart.user[0].address === null || this.props.cart.user[0].phone === null) {
                     Popup.show({
                         type: 'Warning',
                         title: 'Chưa có thông tin',
@@ -102,7 +102,7 @@ class CartView extends Component {
                         }
                     })
                 }
-                else{
+                else {
                     Popup.show({
                         type: 'Warning',
                         title: 'Xác nhận địa chỉ giao hàng',
@@ -118,7 +118,7 @@ class CartView extends Component {
                             setTimeout(() => {
                                 this.sendOrder(token);
                             }, 1000)
-    
+
                         }
                     })
                 }
@@ -133,9 +133,11 @@ class CartView extends Component {
         const { main, checkoutButton, checkoutTitle, wrapper,
             productStyle, mainRight, productController,
             txtName, txtPrice, productImage, numberOfProduct,
-            txtShowDetail, showDetailContainer } = styles;
+            txtShowDetail, showDetailContainer, listHeader } = styles;
         const { Cart } = this.props.cart;
-        const arrTotal = Cart.map(e => e.product.price * e.quantity);
+        console.log(Cart);
+        console.log(Cart[0].productInfo);
+        const arrTotal = Cart.map(e => e.productInfo.product.price * e.quantity);
         const total = arrTotal.length ? arrTotal.reduce((a, b) => a + b) : 0;
         return (
             <View style={wrapper}>
@@ -143,43 +145,47 @@ class CartView extends Component {
                     contentContainerStyle={main}
                     enableEmptySections
                     data={Cart}
+                    ListHeaderComponent={
+                        <Text style={listHeader}>Sản Phẩm Đã Chọn</Text>
+                    }
+                    
                     renderItem={cartItem => (
                         <View style={productStyle}>
-                            <TouchableOpacity onPress={this.gotoDetail.bind(this, cartItem.item.product)}>
-                                <Image source={{ uri: `${global.baseUrl}/api/imageByID/${cartItem.item.product.imagesID.split(',')[0]}` }} style={productImage} />
+                            <TouchableOpacity onPress={this.gotoDetail.bind(this, cartItem.item.productInfo.product)}>
+                                <Image source={{ uri: `${global.baseUrl}/api/imageByID/${cartItem.item.productInfo.product.imagesID.split(',')[0]}` }} style={productImage} />
                             </TouchableOpacity>
                             <View style={[mainRight]}>
-                                <View style={{ justifyContent: 'space-between', flexDirection: 'row' }}>
-                                    <Text style={txtName}>{toTitleCase(cartItem.item.product.name)}</Text>
-                                    <TouchableOpacity onPress={() => this.removeProduct(cartItem.item.product)}>
-                                        <Text style={{ fontFamily: 'Avenir', color: '#969696' }}>X</Text>
-                                      </TouchableOpacity>
+                                <View style={{ flexDirection: 'row' }}>
+                                    <Text style={txtName}>{toTitleCase(cartItem.item.productInfo.product.name)}</Text>
+                                    <TouchableOpacity onPress={() => this.removeProduct(cartItem.item.productInfo)}>
+                                        <Text style={{ fontFamily: 'Avenir', color: '#969696', fontSize: 15 }}>X</Text>
+                                    </TouchableOpacity>
                                 </View>
                                 <View>
-                                    <Text style={txtPrice}>{global.MoneyStand(cartItem.item.product.price)} VNĐ</Text>
+                                    <Text style={txtPrice}>{global.MoneyStand(cartItem.item.productInfo.product.price)} VNĐ</Text>
                                 </View>
                                 <View style={productController}>
                                     <View style={numberOfProduct}>
-                                        <TouchableOpacity onPress={() => this.decrQuantity(cartItem.item.product)}>
+                                        <TouchableOpacity onPress={() => this.decrQuantity(cartItem.item.productInfo)}>
                                             <Text style={{ fontSize: 20 }}>-</Text>
                                         </TouchableOpacity>
                                         <Text style={{ fontSize: 20 }}>{cartItem.item.quantity}</Text>
-                                        <TouchableOpacity onPress={() => this.incrQuantity(cartItem.item.product)}>
+                                        <TouchableOpacity onPress={() => this.incrQuantity(cartItem.item.productInfo)}>
                                             <Text style={{ fontSize: 20 }}>+</Text>
                                         </TouchableOpacity>
                                     </View>
-                                    {/* <TouchableOpacity style={showDetailContainer} onPress={this.gotoDetail.bind(this, cartItem.item.product)}>
-                                        <Text style={txtShowDetail}>SHOW DETAILS</Text>
-                                    </TouchableOpacity> */}
+                                    <TouchableOpacity style={showDetailContainer} >
+                                        <Text style={txtShowDetail}>Size: {cartItem.item.productInfo.sizename}</Text>
+                                    </TouchableOpacity>
                                 </View>
                             </View>
                         </View>
                     )}
-                    keyExtractor={cartItem => cartItem.product.id}
+                    keyExtractor={cartItem => cartItem.productInfo.size}
                     extraData={this.state}
                 />
                 <TouchableOpacity style={checkoutButton} onPress={this.onSendOrder.bind(this)}>
-                    <Text style={checkoutTitle}>TỔNG CỘNG {global.MoneyStand(total)} VNĐ</Text>
+                    <Text style={checkoutTitle}>TỔNG CỘNG: {global.MoneyStand(total)} VNĐ</Text>
                 </TouchableOpacity>
             </View>
         );
@@ -197,10 +203,17 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#DFDFDF'
     },
+    listHeader: {
+        height: 30,
+        marginTop: 0,
+        backgroundColor: 'white',
+        borderRadius: 2,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
     checkoutButton: {
         height: 50,
-        margin: 10,
-        marginTop: 0,
+        margin: 5,
         backgroundColor: '#2ABB9C',
         borderRadius: 2,
         alignItems: 'center',
@@ -217,7 +230,7 @@ const styles = StyleSheet.create({
     },
     productStyle: {
         flexDirection: 'row',
-        margin: 10,
+        marginBottom: 10,
         padding: 10,
         backgroundColor: '#FFFFFF',
         borderRadius: 2,
@@ -245,7 +258,7 @@ const styles = StyleSheet.create({
     },
     txtName: {
         paddingLeft: 20,
-        color: '#A7A7A7',
+        color: 'black',
         fontSize: 20,
         fontWeight: '400',
         fontFamily: 'Avenir'
@@ -258,8 +271,9 @@ const styles = StyleSheet.create({
         fontFamily: 'Avenir'
     },
     txtShowDetail: {
+        marginTop: 5,
         color: '#C21C70',
-        fontSize: 10,
+        fontSize: 15,
         fontWeight: '400',
         fontFamily: 'Avenir',
         textAlign: 'right',

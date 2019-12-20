@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import { BottomTabBar, createBottomTabNavigator } from 'react-navigation-tabs';
-import { createAppContainer } from 'react-navigation';
+import { createAppContainer,StackActions } from 'react-navigation';
 import { Icon, Text, } from 'react-native-elements';
 import store from '../store'
 import { connect } from 'react-redux'
 import * as actions from '../actions';
+
 
 import Home from '../screens/Main/Shop/Home/Home'
 import Contact from '../screens/Main/Shop/Contact/Contact'
@@ -128,6 +129,13 @@ const HomeTabsnonHeader = createBottomTabNavigator(
       // Android's default showing of icons is false whereas iOS is true
       showIcon: true,
     },
+    defaultNavigationOptions: ({ navigation }) => ({
+      tabBarOnPress: ({ navigation, defaultHandler }) => {
+        // to navigate to the top of stack whenever tab changes
+        navigation.dispatch(StackActions.popToTop());
+        defaultHandler();
+        },
+    }),
     tabBarComponent: props => {
       const currentIndex = props.navigation.state.index;
 

@@ -6,6 +6,7 @@ import {
 import initData from '../api/initData';
 import saveCart from '../api/saveCart';
 import getCart from '../api/getCart';
+import { act } from 'react-test-renderer';
 let initialState = { Cart: [], arrProduct: [], user:null , drawer: null};//arrProduct de tim kiem
 
 
@@ -62,50 +63,48 @@ export default function (state = initialState, action) {
     }
 }
 const incrQuantity = (Cart, action) => {
-    
-    const productId = action.payload.product.id;
     const size = action.payload.size;
     const newCart = Cart.map(e => {
-        if (e.product.id !== productId) return e;
+        if (e.productInfo.size !== size) return e;
         else {
-            // if(e.size !== action.payloa)
+            return { productInfo: e.productInfo, quantity: e.quantity + 1 };
         }
-        return { product: e.product, quantity: e.quantity + 1 };
     });
-    console.log(newCart);
     saveCart(newCart);
     return newCart;
 }
 
 const addProductToCart = (Cart, action) => {
-    const product = action.payload;
-    const isExist = Cart.some(e => e.product.id === product.id);
+    const size = action.payload.size;
+    const isExist = Cart.some(e => e.productInfo.size === size);
     if (isExist) {
         return incrQuantity(Cart, action);
     }
-    const newArray = Cart.concat({ product, quantity: 1 });
+    const productInfo = action.payload;
+    const newArray = Cart.concat({ productInfo, quantity: 1 });
     saveCart(newArray);
     return newArray;
 }
 
 const removeProduct = (Cart, action) => {
     const productId = action.payload.id;
-    const newCart = Cart.filter(e => e.product.id !== productId);
+    const size = action.payload.size;
+    const newCart = Cart.filter(e => e.productInfo.size !== size);
     saveCart(newCart)
     return newCart;
 }
 
 const decrQuantity = (Cart, action) => {
-    const productId = action.payload.id;
     var isDelete = false;
+    const size = action.payload.size;
     const newCart = Cart.map(e => {
-        if (e.product.id !== productId) return e;
+        if (e.productInfo.size !== size) return e;
         else {
             if (e.quantity - 1 === 0) {
                 isDelete = true;
             }
             else {
-                return { product: e.product, quantity: e.quantity - 1 };
+                return { productInfo: e.productInfo, quantity: e.quantity - 1 };
             }
         }
     });
