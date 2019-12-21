@@ -112,7 +112,7 @@ export default class ListProduct extends Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#DBDBD8'
+        backgroundColor: 'white'
     },
     header: {
         height: 50,
@@ -123,11 +123,11 @@ const styles = StyleSheet.create({
     },
     wrapper: {
         backgroundColor: '#fff',
-        shadowColor: '#2E272B',
-        shadowOffset: { width: 0, height: 3 },
-        shadowOpacity: 0.2,
-        margin: 10,
-        paddingHorizontal: 10
+        // shadowColor: '#2E272B',
+        // shadowOffset: { width: 0, height: 3 },
+        // shadowOpacity: 0.2,
+        // margin: 10,
+        // paddingHorizontal: 10
     },
     backStyle: {
         width: 30,

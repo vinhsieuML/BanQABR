@@ -9,7 +9,7 @@ const signIn = (email, pass) => (
         },
         body: JSON.stringify({ email, pass })
     })
-    .then(res =>  res.json())
+    .then(res => res.json())
 );
 
 module.exports = signIn;

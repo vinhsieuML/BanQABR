@@ -5,9 +5,11 @@ import {
 
 import initData from '../api/initData';
 import saveCart from '../api/saveCart';
-import getCart from '../api/getCart';
+import localSaveCart from '../api/localSaveCart';
 import { act } from 'react-test-renderer';
-let initialState = { Cart: [], arrProduct: [], user:null , drawer: null};//arrProduct de tim kiem
+import getToken from '../api/getToken';
+
+let initialState = { Cart: [], arrProduct: [], user: null, drawer: null };//arrProduct de tim kiem
 
 
 export default function (state = initialState, action) {
@@ -48,29 +50,29 @@ export default function (state = initialState, action) {
                 user: action.payload
             });
         case REMOVECART:
-            saveCart([]);
+            localSaveCart([]);
             return Object.assign({}, state, {
                 ...state,
                 Cart: []
             });
         case INITDRAWER:
-                return Object.assign({}, state, {
-                    ...state,
-                    drawer: action.payload
-                });
+            return Object.assign({}, state, {
+                ...state,
+                drawer: action.payload
+            });
         default:
             return state;
     }
 }
 const incrQuantity = (Cart, action) => {
     const size = action.payload.size;
-    const newCart = Cart.map(e => {
+    var newCart = Cart.map(e => {
         if (e.productInfo.size !== size) return e;
         else {
             return { productInfo: e.productInfo, quantity: e.quantity + 1 };
         }
     });
-    saveCart(newCart);
+    
     return newCart;
 }
 
@@ -82,15 +84,13 @@ const addProductToCart = (Cart, action) => {
     }
     const productInfo = action.payload;
     const newArray = Cart.concat({ productInfo, quantity: 1 });
-    saveCart(newArray);
     return newArray;
 }
 
 const removeProduct = (Cart, action) => {
-    const productId = action.payload.id;
     const size = action.payload.size;
     const newCart = Cart.filter(e => e.productInfo.size !== size);
-    saveCart(newCart)
+
     return newCart;
 }
 
@@ -111,7 +111,6 @@ const decrQuantity = (Cart, action) => {
     if (isDelete === true) {
         return removeProduct(Cart, action);
     }
-    saveCart(newCart);
     return newCart;
 }
 

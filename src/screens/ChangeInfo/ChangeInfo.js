@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-    View, TouchableOpacity, Text, Image, StyleSheet, TextInput, Alert
+    View, TouchableOpacity, Text, StyleSheet, TextInput, Keyboard
 } from 'react-native';
 // import backSpecial from '../../media/appIcon/backs.png';
 import { Popup } from 'popup-ui'
@@ -25,7 +25,6 @@ class ChangeInfo extends Component {
         navigator.pop();
     }
     onSuccess() {
-        console.log("A");
         Popup.show({
             type: 'Success',
             title: 'Thay Đổi Thành Công',
@@ -51,6 +50,7 @@ class ChangeInfo extends Component {
         })
     }
     ChangeInfo(){
+        Keyboard.dismiss();
         const { address, phone} = this.state;
         
         if(address!=='' && phone!==''){

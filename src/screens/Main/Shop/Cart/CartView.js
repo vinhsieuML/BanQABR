@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {
-    View, Text, TouchableOpacity, ListView,
-    Dimensions, StyleSheet, Image, Button, FlatList
+    View, Text, TouchableOpacity, ActivityIndicator,
+    Dimensions, StyleSheet, Image,  FlatList, RefreshControl
 } from 'react-native';
 import { Popup } from 'popup-ui'
 import { connect } from 'react-redux'
@@ -9,6 +9,8 @@ import * as actions from '../../../../actions';
 import sendOrder from '../../../../api/sendOrder';
 import getToken from '../../../../api/getToken';
 import global from '../../../../global';
+import saveCart from '../../../../api/saveCart';
+import localSaveCart from '../../../../api/localSaveCart'
 
 function toTitleCase(str) {
     return str.replace(/\w\S*/g, txt => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
@@ -17,6 +19,10 @@ function toTitleCase(str) {
 class CartView extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+            refreshing: false,
+            isSending: false
+        }
     }
     initCart = () => {
         this.props.initCart();
@@ -25,23 +31,61 @@ class CartView extends Component {
         const { navigate } = this.props.navigation;
         navigate('ProductDetail', { product: product });
     }
-    incrQuantity(product) {
+    async checkCart() {
+        const token = await getToken();
+        if (token !== '') {
+            const result = await saveCart(token, this.props.cart.Cart);
+            localSaveCart(result);
+            this.props.initCart();
+        }
+    };
+    async incrQuantity(product) {
         this.props.incrQuantity(product);
+        this.checkCart();
     }
-    decrQuantity(product) {
+    async decrQuantity(product) {
         this.props.decrQuantity(product);
+        this.checkCart();
     }
-    removeProduct(product) {
+    async removeProduct(product) {
         this.props.removeProduct(product);
+        this.checkCart();
+    }
+    onRefresh() {
+        this.setState({ refreshing: true });
+        this.checkCart();
+        this.setState({ refreshing: false });
+
     }
     componentDidMount() {
         this.initCart();
     }
     async sendOrder(token) {
+        this.setState({ isSending: true })
         const arrayDetail = this.props.cart.Cart.map(e => ({
-            id: e.product.id,
+            id: e.productInfo.product.id,
+            idsize: e.productInfo.size,
             quantity: e.quantity
         }));
+        await this.checkCart();
+        const arrayDetailAfterCheck = this.props.cart.Cart.map(e => ({
+            id: e.productInfo.product.id,
+            idsize: e.productInfo.size,
+            quantity: e.quantity
+        }));
+        // console.log('arrayDetail', arrayDetail);
+        // console.log('arr', arrayDetailAfterCheck);
+        // if (arrayDetail === arrayDetailAfterCheck) {
+        // Popup.show({
+        //     type: 'Success',
+        //     title: 'Thành Công',
+        //     button: true,
+        //     textBody: 'Mua hàng thành công, sẽ có nhân viên xác nhận với bạn',
+        //     buttonText: 'Xác Nhận',
+        //     callback: () => {
+        //             Popup.hide();
+        //     }
+        // })
         const kq = await sendOrder(token, arrayDetail);
         if (kq === 'THANH CONG') {
             Popup.show({
@@ -52,6 +96,7 @@ class CartView extends Component {
                 buttonText: 'Xác Nhận',
                 callback: () => {
                     this.props.removeCart(),
+                        this.setState({ isSending: false }),
                         Popup.hide();
                 }
             })
@@ -64,10 +109,24 @@ class CartView extends Component {
                 textBody: 'Vui lòng kiểm tra lại',
                 buttonText: 'Ok',
                 callback: () => {
+                    this.setState({ isSending: false })
                     Popup.hide();
                 }
             })
         }
+        // }
+        // else {
+        //     Popup.show({
+        //         type: 'Danger',
+        //         title: 'Một số sản phẩm đã thay đổi',
+        //         button: false,
+        //         textBody: 'Một số sản phẩm đã thay đổi vui lòng kiểm tra lại',
+        //         buttonText: 'Ok',
+        //         callback: () => {
+        //             Popup.hide();
+        //         }
+        //     })
+        // }
     }
     async onSendOrder() {
         try {
@@ -118,7 +177,6 @@ class CartView extends Component {
                             setTimeout(() => {
                                 this.sendOrder(token);
                             }, 1000)
-
                         }
                     })
                 }
@@ -135,10 +193,16 @@ class CartView extends Component {
             txtName, txtPrice, productImage, numberOfProduct,
             txtShowDetail, showDetailContainer, listHeader } = styles;
         const { Cart } = this.props.cart;
-        console.log(Cart);
-        console.log(Cart[0].productInfo);
+        const {isSending} = this.state;
         const arrTotal = Cart.map(e => e.productInfo.product.price * e.quantity);
         const total = arrTotal.length ? arrTotal.reduce((a, b) => a + b) : 0;
+        const indicator = (
+            <View style= {{ flexDirection: 'row' }}>
+                <Text >Đang Thực Hiện Giao Dịch</Text>
+                <ActivityIndicator size="small" color="#00ff00" animating={true}/>
+            </View>
+        );
+        const CartExist = this.state.isSending ? indicator : <Text >Các sản phẩm đã chọn</Text>
         return (
             <View style={wrapper}>
                 <FlatList
@@ -146,9 +210,14 @@ class CartView extends Component {
                     enableEmptySections
                     data={Cart}
                     ListHeaderComponent={
-                        <Text style={listHeader}>Sản Phẩm Đã Chọn</Text>
+                        <View style={listHeader}>{
+                            Cart.length !== 0 ? CartExist
+                                :<Text >Bạn chưa chọn sản phẩm nào</Text>}
+                        </View>
                     }
-                    
+                    refreshControl={
+                        <RefreshControl refreshing={this.state.refreshing} onRefresh={this.onRefresh.bind(this)} />
+                    }
                     renderItem={cartItem => (
                         <View style={productStyle}>
                             <TouchableOpacity onPress={this.gotoDetail.bind(this, cartItem.item.productInfo.product)}>
@@ -207,7 +276,8 @@ const styles = StyleSheet.create({
         height: 30,
         marginTop: 0,
         backgroundColor: 'white',
-        borderRadius: 2,
+        borderRadius: 5,
+        marginBottom: 5,
         alignItems: 'center',
         justifyContent: 'center'
     },

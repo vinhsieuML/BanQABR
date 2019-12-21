@@ -5,6 +5,7 @@ import signIn from '../../api/signIn';
 import global from '../../global';
 import { connect } from 'react-redux'
 import saveToken from '../../api/saveToken';
+import localSaveCart from '../../api/localSaveCart'
 import * as action from '../../actions'
 import {  Popup } from 'popup-ui'
 class SignIn extends Component {
@@ -24,7 +25,8 @@ class SignIn extends Component {
                 if (!res.message) {
                     this.props.setUser(res.user);
                     saveToken(res.token);
-                    console.log('dang nhap thanh cong');
+                    let result = localSaveCart(res.cart);
+                    this.props.initCart();
                     Popup.show({
                         type: 'Success',
                         title: 'Đăng Nhập Thành Công',
@@ -59,6 +61,7 @@ class SignIn extends Component {
     onSignOut() {
         this.props.setUser(null);
         saveToken('');
+        this.props.removeCart();
     }
     goBack() {
         this.props.navigation.navigate('Home');
@@ -86,7 +89,6 @@ class SignIn extends Component {
                 Popup.hide();
             }
         })
-        // this.goBack();
     }
     componentDidMount() {
         this.props.user.user !== null ? this.showPopUp() : null

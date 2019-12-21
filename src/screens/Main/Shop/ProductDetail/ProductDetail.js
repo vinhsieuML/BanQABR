@@ -10,6 +10,9 @@ import { connect } from 'react-redux'
 import * as actions from '../../../../actions'
 import ImageViewer from 'react-native-image-zoom-viewer';
 import SelectInput from 'react-native-select-input-ios'
+import getToken from '../../../../api/getToken'
+import saveCart from '../../../../api/saveCart'
+import localSaveCart from '../../../../api/localSaveCart'
 import { Toast } from 'popup-ui'
 
 function IconWithBadge({ name, badgeCount, color, size, style }) {
@@ -50,13 +53,22 @@ class ProductDetail extends Component {
         const { navigation } = this.props;
         navigation.goBack();
     }
-    addThisProductToCart() {
+    async checkCart(){
+        const token = await getToken();
+        if (token !== '') {
+            const result = await saveCart(token, this.props.cart.Cart);
+            localSaveCart(result);
+            this.props.initCart();
+        }
+    };
+    async addThisProductToCart() {
         const product = this.props.navigation.getParam('product');
         const size = this.state.selectedSize;
         if (size !== null) {
             const sizename = this.state.listSize.find(e => e.id_size_detail === size).name;
             const data = { product, size , sizename};
             this.props.addProductToCart(data);
+            this.checkCart();
             Toast.show({
                 title: 'Thêm vào giỏ hàng',
                 text: 'Đã Thêm Thành Công Vào Giỏ Hàng',
@@ -111,7 +123,7 @@ class ProductDetail extends Component {
         ))
         const imageZoom = (
             <Modal visible={true} transparent={true}>
-                <ImageViewer imageUrls={images} onDoubleClick={this.backPress.bind(this)} onSwipeDown={this.backPress.bind(this)} />
+                <ImageViewer imageUrls={images} onDoubleClick={this.backPress.bind(this)} onSwipeDown={this.backPress.bind(this)}/>
             </Modal>
         );
         //Cart
@@ -119,11 +131,7 @@ class ProductDetail extends Component {
         const total = badgeValue.length ? badgeValue.reduce((a, b) => a + b) : 0;
         const info = (
             <ScrollView style={wrapper}>
-                <Toast
-                    ref={c => {
-                        if (c) Toast.toastInstance = c
-                    }}
-                />
+                
                 <View style={cardStyle}>
                     <View style={header}>
                         <Icon
@@ -167,7 +175,16 @@ class ProductDetail extends Component {
                         </View>
                         <View style={descContainer}>
                             <Text>
-                                aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                            X không đơn thuần là một đôi giày. Đây là lời khẳng định rằng tốc độ sẽ chọc thủng hàng phòng ngự đối phương, thay vì đi vào ngõ cụt. Hãy dừng lại nếu bạn không thể nỗ lực bứt tốc. Nhưng hãy đọc tiếp nếu bạn đã sẵn sàng bứt phá mọi giới hạn. Mẫu giày bóng đá này có thân trên mỏng để đôi chân lướt nhẹ như không, cảm giác chạm bóng chân thực và tốc độ phi thường. Cổ giày thấp kết hợp hoàn hảo với gót đúc để giữ thăng bằng cho bạn trong các pha bóng bùng nổ.
+
+Cảm giác chạm bóng chân thực
+Thân giày trên bằng lưới Speedmesh siêu mỏng giúp đôi chân lướt nhẹ như không với tốc độ phi thường và cảm giác chạm bóng chân thực đến tuyệt vời
+
+Ôm sát
+Cổ giày thấp có thiết kế giống như chiếc móng vuốt cố định bàn chân trong giày để đem đến sự ổn định siêu việt; Hệ thống dây mui giày điều chỉnh linh hoạt kết hợp với lưỡi giày co giãn bốn chiều giúp cố định tối ưu; Gót giày đúc 3D nổi bật tạo độ ôm sát và các vùng có đệm lót giúp tối ưu cử động mắt cá chân
+
+Lướt nhanh trên sân cỏ tự nhiên
+Đế ngoài Speedframe siêu nhẹ đục lỗ để tập trung tăng tốc; Đinh giày hình mũi tên ở mũi giày kết hợp với đinh tròn ở gót giày giúp bạn nhanh chóng bứt tốc và dừng lại trên mặt sân cỏ tự nhiên
                             </Text>
                             {/* <WebView source={{ uri: 'https://facebook.github.io/react-native/' }} /> */}
                         </View>
@@ -199,14 +216,14 @@ const styles = StyleSheet.create({
     wrapper: {
         flex: 1,
         // backgroundColor: '#D6D6D6',
-        backgroundColor: 'black',
+        backgroundColor: 'white',
     },
     cardStyle: {
         flex: 1,
         backgroundColor: '#FFFFFF',
-        borderRadius: 5,
-        marginHorizontal: 10,
-        marginVertical: 10
+        // borderRadius: 5,
+        // marginHorizontal: 10,
+        // marginVertical: 10
     },
     header: {
         flexDirection: 'row',
