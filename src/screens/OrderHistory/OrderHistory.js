@@ -5,7 +5,7 @@ import {
 import backSpecial from '../../media/appIcon/backs.png';
 import getOrderHistory from '../../api/getOrderHistory';
 import getToken from '../../api/getToken';
-
+import global from '../../global'
 export default class OrderHistory extends Component {
     constructor(props) {
         super(props);
@@ -34,18 +34,32 @@ export default class OrderHistory extends Component {
         this.setState({ refreshing: false })
 
     }
-
+    renderSwitch(param) {
+        switch (param) {
+            case 0:
+                return 'Chờ Duyệt COD';
+            case 1:
+                return 'Đã Thanh Toán Online';
+            case 2:
+                return 'Đã Hủy Online';
+            case 3:
+                return 'Đã Duyệt, Đang Giao Hàng';
+            case 4:
+                return 'Đơn Hàng Hoàn Tất';
+        }
+    }
     goBackToMain() {
         const { navigator } = this.props;
         navigator.pop();
     }
     render() {
         const { wrapper, header, headerTitle, backIconStyle, body, orderRow } = styles;
+
         return (
             <View style={wrapper}>
                 <View style={header}>
                     <View />
-                    <Text style={headerTitle}>Order History</Text>
+                    <Text style={headerTitle}>Lịch Sử Giao Dịch</Text>
                 </View>
                 <View style={body}>
                     <ScrollView
@@ -54,24 +68,26 @@ export default class OrderHistory extends Component {
                         }
                     >
                         {this.state.arrOrder.map(e => (
-                            <View style={orderRow} key={e.id}>
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                    <Text style={{ color: '#9A9A9A', fontWeight: 'bold' }}>Order id:</Text>
-                                    <Text style={{ color: '#2ABB9C' }}>ORD{e.id}</Text>
+                            <TouchableOpacity>
+                                <View style={orderRow} key={e.id}>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                        <Text style={{ color: '#9A9A9A', fontWeight: 'bold' }}>Mã order:</Text>
+                                        <Text style={{ color: '#2ABB9C' }}>ORD{e.id}</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                        <Text style={{ color: '#9A9A9A', fontWeight: 'bold' }}>Thời gian:</Text>
+                                        <Text style={{ color: '#C21C70' }}>{e.date_order}</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                        <Text style={{ color: '#9A9A9A', fontWeight: 'bold' }}>Trạng Thái:</Text>
+                                        <Text style={{ color: '#2ABB9C' }}>{this.renderSwitch(e.status)}</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                        <Text style={{ color: '#9A9A9A', fontWeight: 'bold' }}>Tổng tiền:</Text>
+                                        <Text style={{ color: '#C21C70', fontWeight: 'bold' }}>{global.MoneyStand(e.total)} VNĐ</Text>
+                                    </View>
                                 </View>
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                    <Text style={{ color: '#9A9A9A', fontWeight: 'bold' }}>OrderTime:</Text>
-                                    <Text style={{ color: '#C21C70' }}>{e.date_order}</Text>
-                                </View>
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                    <Text style={{ color: '#9A9A9A', fontWeight: 'bold' }}>Status:</Text>
-                                    <Text style={{ color: '#2ABB9C' }}>{e.status ? 'Completed' : 'Pending'}</Text>
-                                </View>
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                    <Text style={{ color: '#9A9A9A', fontWeight: 'bold' }}>Total:</Text>
-                                    <Text style={{ color: '#C21C70', fontWeight: 'bold' }}>{e.total}$</Text>
-                                </View>
-                            </View>
+                            </TouchableOpacity>
                         ))}
                     </ScrollView>
                 </View>

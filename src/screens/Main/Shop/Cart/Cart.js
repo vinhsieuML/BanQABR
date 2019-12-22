@@ -2,7 +2,7 @@ import { createStackNavigator } from 'react-navigation-stack';
 import CartView from './CartView';
 import ProductDetail from '../ProductDetail/ProductDetail'
 import Authentication from '../../../Authentication/Authentication'
-
+import checkOut from './checkOut'
 const Cart = createStackNavigator({
     CartView: {
         screen: CartView,
@@ -15,7 +15,11 @@ const Cart = createStackNavigator({
     Authentication: {
         screen: Authentication,
         path: 'authentication'
-    }
+    },
+    checkOut: {
+        screen: checkOut,
+        path: '/checkOut'
+    },
 },
     {
         // initialRouteName = 'CartView',

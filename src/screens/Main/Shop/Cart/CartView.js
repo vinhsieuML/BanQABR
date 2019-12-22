@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {
     View, Text, TouchableOpacity, ActivityIndicator,
-    Dimensions, StyleSheet, Image,  FlatList, RefreshControl
+    Dimensions, StyleSheet, Image, FlatList, RefreshControl
 } from 'react-native';
 import { Popup } from 'popup-ui'
 import { connect } from 'react-redux'
@@ -30,6 +30,10 @@ class CartView extends Component {
     gotoDetail(product) {
         const { navigate } = this.props.navigation;
         navigate('ProductDetail', { product: product });
+    }
+    goToCheckOut(url) {
+        const { navigate } = this.props.navigation;
+        navigate('checkOut', { url: url });
     }
     async checkCart() {
         const token = await getToken();
@@ -60,7 +64,7 @@ class CartView extends Component {
     componentDidMount() {
         this.initCart();
     }
-    async sendOrder(token) {
+    async sendOrder(token, type) {
         this.setState({ isSending: true })
         const arrayDetail = this.props.cart.Cart.map(e => ({
             id: e.productInfo.product.id,
@@ -86,31 +90,32 @@ class CartView extends Component {
         //             Popup.hide();
         //     }
         // })
-        const kq = await sendOrder(token, arrayDetail);
+        const kq = await sendOrder(token, arrayDetail ,type);
         if (kq === 'THANH CONG') {
             Popup.show({
                 type: 'Success',
                 title: 'Thành Công',
                 button: true,
-                textBody: 'Mua hàng thành công, sẽ có nhân viên xác nhận với bạn',
+                textBody: 'Thanh Toán COD Thành Công, sẽ có nhân viên xác nhận với bạn',
                 buttonText: 'Xác Nhận',
                 callback: () => {
-                    this.props.removeCart(),
-                        this.setState({ isSending: false }),
-                        Popup.hide();
+                    // this.props.removeCart(),
+                    this.setState({ isSending: false });
+                    Popup.hide();
                 }
             })
 
         } else {
             Popup.show({
-                type: 'Danger',
-                title: 'Không Thành Công',
+                type: 'Warning',
+                title: 'Chuyển sang trang thanh toán',
                 button: false,
                 textBody: 'Vui lòng kiểm tra lại',
                 buttonText: 'Ok',
                 callback: () => {
-                    this.setState({ isSending: false })
-                    Popup.hide();
+                    this.setState({ isSending: false }),
+                        this.goToCheckOut(kq),
+                        Popup.hide();
                 }
             })
         }
@@ -128,7 +133,8 @@ class CartView extends Component {
         //     })
         // }
     }
-    async onSendOrder() {
+    async onSendOrder(type) {
+        if (this.state.isSending === true) return;
         try {
             const token = await getToken();
             if (token === "") {
@@ -175,7 +181,7 @@ class CartView extends Component {
                         callback: () => {
                             Popup.hide();
                             setTimeout(() => {
-                                this.sendOrder(token);
+                                this.sendOrder(token,type);
                             }, 1000)
                         }
                     })
@@ -188,18 +194,18 @@ class CartView extends Component {
     }
 
     render() {
-        const { main, checkoutButton, checkoutTitle, wrapper,
+        const { main, totalPath, checkoutTitle, wrapper,
             productStyle, mainRight, productController,
             txtName, txtPrice, productImage, numberOfProduct,
-            txtShowDetail, showDetailContainer, listHeader } = styles;
+            txtShowDetail, showDetailContainer, listHeader,checkOutButton } = styles;
         const { Cart } = this.props.cart;
-        const {isSending} = this.state;
+        const { isSending } = this.state;
         const arrTotal = Cart.map(e => e.productInfo.product.price * e.quantity);
         const total = arrTotal.length ? arrTotal.reduce((a, b) => a + b) : 0;
         const indicator = (
-            <View style= {{ flexDirection: 'row' }}>
+            <View style={{ flexDirection: 'row' }}>
                 <Text >Đang Thực Hiện Giao Dịch</Text>
-                <ActivityIndicator size="small" color="#00ff00" animating={true}/>
+                <ActivityIndicator size="small" color="#00ff00" animating={true} />
             </View>
         );
         const CartExist = this.state.isSending ? indicator : <Text >Các sản phẩm đã chọn</Text>
@@ -212,7 +218,7 @@ class CartView extends Component {
                     ListHeaderComponent={
                         <View style={listHeader}>{
                             Cart.length !== 0 ? CartExist
-                                :<Text >Bạn chưa chọn sản phẩm nào</Text>}
+                                : <Text >Bạn chưa chọn sản phẩm nào</Text>}
                         </View>
                     }
                     refreshControl={
@@ -253,9 +259,17 @@ class CartView extends Component {
                     keyExtractor={cartItem => cartItem.productInfo.size}
                     extraData={this.state}
                 />
-                <TouchableOpacity style={checkoutButton} onPress={this.onSendOrder.bind(this)}>
+                <View style={totalPath}>
                     <Text style={checkoutTitle}>TỔNG CỘNG: {global.MoneyStand(total)} VNĐ</Text>
-                </TouchableOpacity>
+                    <View style ={{flexDirection: "row", justifyContent: 'space-between', flex: 1}}>
+                        <TouchableOpacity style={checkOutButton} onPress={this.onSendOrder.bind(this, 1)}>
+                            <Text style={checkoutTitle}>Thanh Toán COD</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={checkOutButton} onPress={this.onSendOrder.bind(this, 2)}>
+                            <Text style={checkoutTitle}>Thanh Toán ONLINE</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
             </View>
         );
     }
@@ -281,11 +295,22 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center'
     },
-    checkoutButton: {
-        height: 50,
-        margin: 5,
-        backgroundColor: '#2ABB9C',
+
+    totalPath: {
+        height: 70,
+        backgroundColor: '#fff0e6',
         borderRadius: 2,
+        alignItems: 'center',
+        justifyContent: 'center'
+    }, 
+    checkOutButton: {
+        height: 40,
+        width: 150,
+        margin: 10,
+        marginBottom: 14,
+        marginTop: 0,
+        backgroundColor: '#ffff66',
+        borderRadius: 10,
         alignItems: 'center',
         justifyContent: 'center'
     },
@@ -293,10 +318,11 @@ const styles = StyleSheet.create({
         width, backgroundColor: '#DFDFDF'
     },
     checkoutTitle: {
-        color: '#FFF',
+        color: 'black',
         fontSize: 15,
         fontWeight: 'bold',
-        fontFamily: 'Avenir'
+        fontFamily: 'Avenir',
+        margin :5 
     },
     productStyle: {
         flexDirection: 'row',

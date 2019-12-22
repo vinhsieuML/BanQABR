@@ -163,7 +163,7 @@ class ProductDetail extends Component {
                     </View>
                     <Text>Vui lòng chọn size</Text>
                     {this.state.listSize !== null ?
-                        <SelectInput value={0} options={this.state.listSize} onSubmitEditing={this.onSubmitEditingSize.bind(this)} /> : null}
+                        <SelectInput options={this.state.listSize} onSubmitEditing={this.onSubmitEditingSize.bind(this)} /> : null}
 
                     <View style={footer}>
                         <View style={titleContainer}>
