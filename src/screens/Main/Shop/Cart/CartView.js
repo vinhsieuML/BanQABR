@@ -91,6 +91,7 @@ class CartView extends Component {
         //     }
         // })
         const kq = await sendOrder(token, arrayDetail ,type);
+        console.log(kq);
         if (kq === 'THANH CONG') {
             Popup.show({
                 type: 'Success',
@@ -99,7 +100,7 @@ class CartView extends Component {
                 textBody: 'Thanh Toán COD Thành Công, sẽ có nhân viên xác nhận với bạn',
                 buttonText: 'Xác Nhận',
                 callback: () => {
-                    // this.props.removeCart(),
+                    this.props.removeCart(),
                     this.setState({ isSending: false });
                     Popup.hide();
                 }
@@ -110,10 +111,11 @@ class CartView extends Component {
                 type: 'Warning',
                 title: 'Chuyển sang trang thanh toán',
                 button: false,
-                textBody: 'Vui lòng kiểm tra lại',
+                textBody: 'Bạn sẽ được chuyển sang trang thanh toán',
                 buttonText: 'Ok',
                 callback: () => {
                     this.setState({ isSending: false }),
+                    this.props.removeCart(),
                         this.goToCheckOut(kq),
                         Popup.hide();
                 }

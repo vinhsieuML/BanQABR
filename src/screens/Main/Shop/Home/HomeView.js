@@ -11,6 +11,7 @@ class HomeView extends Component {
         this.state = {
             types: [],
             topProducts: [],
+            slider: [],
             refreshing: false
         }
     }
@@ -32,6 +33,14 @@ class HomeView extends Component {
             .catch((error) => {
                 console.error(error);
             });
+        fetch(global.baseUrl + '/api/slider')
+            .then((response) => response.json())
+            .then((responseJson) => {
+                this.setState({ slider: responseJson });
+            })
+            .catch((error) => {
+                console.error(error);
+            });
     }
     onRefresh() {
         this.setState({ refreshing: true });
@@ -43,7 +52,7 @@ class HomeView extends Component {
         this.fetchData();
     }
     render() {
-        const { types, topProducts } = this.state;
+        const { types, topProducts, slider } = this.state;
         return (
             <View style={{ flex: 1 }}>
                 <Header
@@ -55,7 +64,7 @@ class HomeView extends Component {
                         <RefreshControl refreshing={this.state.refreshing} onRefresh={this.onRefresh.bind(this)} />
                     }
                 >
-                    <Collection navigation={this.props.navigation} />
+                    <Collection navigation={this.props.navigation} slider={slider} types={types}/>
                     <Category navigation={this.props.navigation} types={types} />
                     <TopProduct navigation={this.props.navigation} topProducts={topProducts} />
                 </ScrollView>

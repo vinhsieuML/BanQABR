@@ -7,7 +7,6 @@ import { Icon, Text, Button } from 'react-native-elements';
 import * as actions from '../../../actions'
 import { connect } from 'react-redux'
 
-
 const { height } = Dimensions.get('window');
 
 

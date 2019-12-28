@@ -8,7 +8,7 @@ import { Icon, colors } from 'react-native-elements';
 
 import HomeNavigator from './HomeNavigator';
 import ChangeInfo from '../screens/ChangeInfo/ChangeInfo'
-import OrderHistory from '../screens/OrderHistory/OrderHistory'
+import Order from '../screens/OrderHistory/Order'
 import Authentication from '../screens/Authentication/Authentication'
 import { hidden } from 'ansi-colors';
 const WINDOW_WIDTH = Dimensions.get('window').width;
@@ -74,7 +74,7 @@ const DrawerNavigator = createDrawerNavigator(
     },
     OrderHistory: {
       path: '/orderhistory',
-      screen: OrderHistory,
+      screen: Order,
       navigationOptions: {
         drawerLockMode: 'locked-closed',
         title: 'Lịch sử mua hàng',
