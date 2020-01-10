@@ -90,7 +90,7 @@ class CartView extends Component {
         //             Popup.hide();
         //     }
         // })
-        const kq = await sendOrder(token, arrayDetail ,type);
+        const kq = await sendOrder(token, arrayDetail, type);
         console.log(kq);
         if (kq === 'THANH CONG') {
             Popup.show({
@@ -101,7 +101,7 @@ class CartView extends Component {
                 buttonText: 'Xác Nhận',
                 callback: () => {
                     this.props.removeCart(),
-                    this.setState({ isSending: false });
+                        this.setState({ isSending: false });
                     Popup.hide();
                 }
             })
@@ -114,8 +114,9 @@ class CartView extends Component {
                 textBody: 'Bạn sẽ được chuyển sang trang thanh toán',
                 buttonText: 'Ok',
                 callback: () => {
+                    console.log(kq);
                     this.setState({ isSending: false }),
-                    this.props.removeCart(),
+                        this.props.removeCart(),
                         this.goToCheckOut(kq),
                         Popup.hide();
                 }
@@ -138,6 +139,7 @@ class CartView extends Component {
     async onSendOrder(type) {
         if (this.state.isSending === true) return;
         try {
+            console.log(type);
             const token = await getToken();
             if (token === "") {
                 Popup.show({
@@ -183,7 +185,7 @@ class CartView extends Component {
                         callback: () => {
                             Popup.hide();
                             setTimeout(() => {
-                                this.sendOrder(token,type);
+                                this.sendOrder(token, type);
                             }, 1000)
                         }
                     })
@@ -199,7 +201,7 @@ class CartView extends Component {
         const { main, totalPath, checkoutTitle, wrapper,
             productStyle, mainRight, productController,
             txtName, txtPrice, productImage, numberOfProduct,
-            txtShowDetail, showDetailContainer, listHeader,checkOutButton } = styles;
+            txtShowDetail, showDetailContainer, listHeader, checkOutButton } = styles;
         const { Cart } = this.props.cart;
         const { isSending } = this.state;
         const arrTotal = Cart.map(e => e.productInfo.product.price * e.quantity);
@@ -263,12 +265,16 @@ class CartView extends Component {
                 />
                 <View style={totalPath}>
                     <Text style={checkoutTitle}>TỔNG CỘNG: {global.MoneyStand(total)} VNĐ</Text>
-                    <View style ={{flexDirection: "row", justifyContent: 'space-between', flex: 1}}>
+                    <View style={{ flexDirection: "row", justifyContent: 'space-between', flex: 1 }}>
                         <TouchableOpacity style={checkOutButton} onPress={this.onSendOrder.bind(this, 1)}>
-                            <Text style={checkoutTitle}>Thanh Toán COD</Text>
+                            <Text style={checkoutTitle}>COD</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={checkOutButton} onPress={this.onSendOrder.bind(this, 2)}>
-                            <Text style={checkoutTitle}>Thanh Toán ONLINE</Text>
+                            <Text style={checkoutTitle}>Thẻ</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity style={checkOutButton} onPress={this.onSendOrder.bind(this, 3)}>
+                            <Text style={checkoutTitle}>MoMo</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -304,12 +310,12 @@ const styles = StyleSheet.create({
         borderRadius: 2,
         alignItems: 'center',
         justifyContent: 'center'
-    }, 
+    },
     checkOutButton: {
         height: 40,
-        width: 150,
+        width: 100,
         margin: 10,
-        marginBottom: 14,
+        marginBottom: 20,
         marginTop: 0,
         backgroundColor: '#ffff66',
         borderRadius: 10,
@@ -324,7 +330,7 @@ const styles = StyleSheet.create({
         fontSize: 15,
         fontWeight: 'bold',
         fontFamily: 'Avenir',
-        margin :5 
+        margin: 5
     },
     productStyle: {
         flexDirection: 'row',

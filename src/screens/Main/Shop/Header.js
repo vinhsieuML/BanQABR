@@ -69,7 +69,10 @@ class Header extends Component {
                             color="white"
                         />
                     </TouchableOpacity>
-                    <Text style={styles.titleStyle}>SH Basketballs</Text>
+                    <Image
+          style={{width: 160, height: 50, marginRight:20,marginBottom:15}}
+          source={require('../../../../imgs/logoblack.png')}
+        />
                     {/* <Icon 
                      name = "shopping-cart"
                      color = "white"

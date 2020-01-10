@@ -1,11 +1,17 @@
 import global from '../global'
-const sendOrder = (token, arrayDetail ,type) => {
+const sendOrder = (token, arrayDetail, type) => {
     const data = { token, arrayDetail };
     let url;
-    if (type === 1) {
-        url = `${global.baseUrl}/api/cart`;
-    } else {
-        url = `${global.baseUrl}/api/cartOnline`;
+    switch (type) {
+        case 1:
+            url = `${global.baseUrl}/api/cart`;
+            break;
+        case 2:
+            url = `${global.baseUrl}/api/cartOnline`;
+            break;
+        case 3:
+            url = `${global.baseUrl}/api/momo`;
+            break;
     }
     return fetch(url,
         {
